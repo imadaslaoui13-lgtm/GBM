@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html lang="nl">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Contact — Gooise Bouw Meesters</title>
+    <meta
+      name="description"
+      content="Neem contact op met Gooise Bouw Meesters voor loodgieterwerk, tegelzetwerk, timmerwerk en elektrawerk in 't Gooi. Bel, mail of vraag een offerte aan."
+    />
+    <link rel="canonical" href="https://www.gooisebouwmeesters.nl/contact.html" />
+    <link rel="icon" href="favicon.svg" type="image/svg+xml" />
+    <meta name="theme-color" content="#0F0F0F" />
+
+    <!-- Open Graph / Twitter -->
+    <meta property="og:type" content="website" />
+    <meta property="og:site_name" content="Gooise Bouw Meesters" />
+    <meta property="og:locale" content="nl_NL" />
+    <meta property="og:title" content="Contact — Gooise Bouw Meesters" />
+    <meta property="og:description" content="Vraag vrijblijvend een offerte aan voor loodgieterwerk, tegelzetwerk, timmerwerk of elektrawerk in 't Gooi." />
+    <meta property="og:url" content="https://www.gooisebouwmeesters.nl/contact.html" />
+    <meta property="og:image" content="https://www.gooisebouwmeesters.nl/og-image.png" />
+    <meta property="og:image:type" content="image/png" />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="Contact — Gooise Bouw Meesters" />
+    <meta name="twitter:image" content="https://www.gooisebouwmeesters.nl/og-image.png" />
+
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Playfair+Display:ital,wght@0,500;0,600;1,500;1,600&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="style.css" />
+  </head>
+  <body data-menu="closed">
+    <a class="skip-link" href="#main">Naar inhoud</a>
+
+    <header class="nav" id="nav">
+      <div class="wrap nav__inner">
+        <a href="index.html" class="brand" aria-label="Gooise Bouw Meesters home">
+          <span class="brand__mark" aria-hidden="true"></span>
+          Gooise Bouw Meesters
+        </a>
+        <nav aria-label="Hoofdnavigatie">
+          <ul class="nav__links">
+            <li><a class="nav__link" href="index.html">Home</a></li>
+            <li><a class="nav__link" href="diensten.html">Diensten</a></li>
+            <li><a class="nav__link" href="contact.html" aria-current="page">Contact</a></li>
+          </ul>
+        </nav>
+        <button class="nav__toggle" id="navToggle" aria-label="Menu openen" aria-expanded="false" aria-controls="drawer">
+          <span></span>
+          <span></span>
+        </button>
+      </div>
+    </header>
+
+    <div class="scrim" id="scrim" hidden></div>
+    <aside class="drawer" id="drawer" aria-label="Mobiel menu">
+      <ul class="drawer__links">
+        <li><a href="index.html">Home</a></li>
+        <li><a href="diensten.html">Diensten</a></li>
+        <li><a href="contact.html" aria-current="page">Contact</a></li>
+      </ul>
+      <div class="drawer__meta">
+        <a href="tel:+31356789012">035 678 90 12</a>
+        <a href="mailto:werk@gooisebouwmeesters.nl">werk@gooisebouwmeesters.nl</a>
+      </div>
+    </aside>
+
+    <main id="main">
+      <section class="page-hero">
+        <div class="wrap page-hero__inner">
+          <span class="marker" aria-hidden="true"></span>
+          <span class="label reveal">Contact</span>
+          <h1 class="reveal">Laten we<br />het bespreken.</h1>
+          <p class="reveal">
+            Vertel ons over uw klus. U krijgt een eerlijk antwoord en een
+            heldere offerte — meestal binnen één werkdag.
+          </p>
+        </div>
+      </section>
+
+      <hr class="divider" />
+
+      <section class="section" style="padding-top: clamp(3rem, 7vw, 5rem)">
+        <div class="wrap">
+          <div class="contact-grid">
+            <!-- Info -->
+            <div class="contact-info">
+              <div class="contact-info__item reveal">
+                <span class="label">Bel direct</span>
+                <a href="tel:+31356789012">035 678 90 12</a>
+              </div>
+              <div class="contact-info__item reveal">
+                <span class="label">E-mail</span>
+                <a href="mailto:werk@gooisebouwmeesters.nl">werk@gooisebouwmeesters.nl</a>
+              </div>
+              <div class="contact-info__item reveal">
+                <span class="label">Atelier</span>
+                <address>
+                  Ambachtsweg 14<br />
+                  1217 ME Hilversum
+                </address>
+              </div>
+              <div class="contact-info__item reveal">
+                <span class="label">Bereikbaar</span>
+                <p class="contact-info__hours">
+                  Maandag t/m vrijdag · 08:00 – 18:00<br />
+                  Zaterdag op afspraak
+                </p>
+              </div>
+            </div>
+
+            <!-- Form -->
+            <form class="form reveal" id="contactForm" novalidate>
+              <div class="field">
+                <label for="naam">Naam</label>
+                <input type="text" id="naam" name="naam" placeholder="Uw naam" required />
+              </div>
+
+              <div class="field">
+                <label for="telefoon">Telefoonnummer</label>
+                <input type="tel" id="telefoon" name="telefoon" placeholder="06 12 34 56 78" required />
+              </div>
+
+              <div class="field">
+                <label for="email">E-mail</label>
+                <input type="email" id="email" name="email" placeholder="naam@voorbeeld.nl" required />
+              </div>
+
+              <div class="field field--choice">
+                <fieldset>
+                  <legend class="choice-legend">
+                    Welke vakman zoekt u?
+                    <span class="choice-hint">Meerdere mogelijk</span>
+                  </legend>
+                  <div class="chips">
+                    <label class="chip">
+                      <input type="checkbox" name="vakman" value="Loodgieterwerk" />
+                      <span>Loodgieterwerk</span>
+                    </label>
+                    <label class="chip">
+                      <input type="checkbox" name="vakman" value="Tegelzetwerk" />
+                      <span>Tegelzetwerk</span>
+                    </label>
+                    <label class="chip">
+                      <input type="checkbox" name="vakman" value="Timmerwerk" />
+                      <span>Timmerwerk</span>
+                    </label>
+                    <label class="chip">
+                      <input type="checkbox" name="vakman" value="Elektrawerk" />
+                      <span>Elektrawerk</span>
+                    </label>
+                  </div>
+                </fieldset>
+              </div>
+
+              <div class="field">
+                <label for="klus">Omschrijving klus</label>
+                <textarea id="klus" name="klus" placeholder="Vertel kort wat er moet gebeuren, en waar." required></textarea>
+              </div>
+
+              <button type="submit" class="btn form__submit">
+                Verzenden
+                <span class="arrow" aria-hidden="true">&rarr;</span>
+              </button>
+
+              <p class="form__note">
+                Wij gebruiken uw gegevens uitsluitend om op uw aanvraag te reageren.
+              </p>
+
+              <div class="form__success" id="formSuccess" role="status">
+                Bedankt — uw aanvraag is verstuurd. Wij nemen zo snel mogelijk contact met u op.
+              </div>
+            </form>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <footer class="footer">
+      <div class="wrap">
+        <div class="footer__inner">
+          <span class="footer__brand">Gooise Bouw Meesters</span>
+          <ul class="footer__nav">
+            <li><a href="index.html">Home</a></li>
+            <li><a href="diensten.html">Diensten</a></li>
+            <li><a href="contact.html">Contact</a></li>
+            <li><a href="privacy.html">Privacy</a></li>
+          </ul>
+        </div>
+        <div class="footer__legal">
+          <span>Verzekerd · Garantie op al ons werk</span>
+          <span>KVK 12345678 · BTW NL000000000B00</span>
+        </div>
+      </div>
+    </footer>
+
+    <a class="callbar" href="tel:+31356789012" aria-label="Bel Gooise Bouw Meesters">
+      Bel ons — 035 678 90 12
+    </a>
+
+    <script src="script.js"></script>
+  </body>
+</html>

@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="nl">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Pagina niet gevonden — Gooise Bouw Meesters</title>
+    <meta name="robots" content="noindex, follow" />
+    <link rel="icon" href="favicon.svg" type="image/svg+xml" />
+    <meta name="theme-color" content="#0F0F0F" />
+
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Playfair+Display:ital,wght@0,500;0,600;1,500;1,600&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="style.css" />
+  </head>
+  <body data-menu="closed">
+    <a class="skip-link" href="#main">Naar inhoud</a>
+
+    <header class="nav" id="nav">
+      <div class="wrap nav__inner">
+        <a href="index.html" class="brand" aria-label="Gooise Bouw Meesters home">
+          <span class="brand__mark" aria-hidden="true"></span>
+          Gooise Bouw Meesters
+        </a>
+        <nav aria-label="Hoofdnavigatie">
+          <ul class="nav__links">
+            <li><a class="nav__link" href="index.html">Home</a></li>
+            <li><a class="nav__link" href="diensten.html">Diensten</a></li>
+            <li><a class="nav__link" href="contact.html">Contact</a></li>
+          </ul>
+        </nav>
+        <button class="nav__toggle" id="navToggle" aria-label="Menu openen" aria-expanded="false" aria-controls="drawer">
+          <span></span>
+          <span></span>
+        </button>
+      </div>
+    </header>
+
+    <div class="scrim" id="scrim" hidden></div>
+    <aside class="drawer" id="drawer" aria-label="Mobiel menu">
+      <ul class="drawer__links">
+        <li><a href="index.html">Home</a></li>
+        <li><a href="diensten.html">Diensten</a></li>
+        <li><a href="contact.html">Contact</a></li>
+      </ul>
+      <div class="drawer__meta">
+        <a href="tel:+31356789012">035 678 90 12</a>
+        <a href="mailto:werk@gooisebouwmeesters.nl">werk@gooisebouwmeesters.nl</a>
+      </div>
+    </aside>
+
+    <main id="main">
+      <section class="error-page">
+        <div class="wrap error-page__inner">
+          <span class="marker" aria-hidden="true"></span>
+          <span class="label">Fout 404</span>
+          <h1>Deze pagina<br />staat niet overeind.</h1>
+          <p>
+            De pagina die u zoekt bestaat niet of is verplaatst. Geen zorgen —
+            we wijzen u terug naar vaste grond.
+          </p>
+          <div class="error-page__actions">
+            <a href="index.html" class="btn">
+              Terug naar home
+              <span class="arrow" aria-hidden="true">&rarr;</span>
+            </a>
+            <a href="contact.html" class="btn btn--ghost">Neem contact op</a>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <footer class="footer">
+      <div class="wrap">
+        <div class="footer__inner">
+          <span class="footer__brand">Gooise Bouw Meesters</span>
+          <ul class="footer__nav">
+            <li><a href="index.html">Home</a></li>
+            <li><a href="diensten.html">Diensten</a></li>
+            <li><a href="contact.html">Contact</a></li>
+            <li><a href="privacy.html">Privacy</a></li>
+          </ul>
+        </div>
+        <div class="footer__legal">
+          <span>Verzekerd · Garantie op al ons werk</span>
+          <span>KVK 12345678 · BTW NL000000000B00</span>
+        </div>
+      </div>
+    </footer>
+
+    <a class="callbar" href="tel:+31356789012" aria-label="Bel Gooise Bouw Meesters">
+      Bel ons — 035 678 90 12
+    </a>
+
+    <script src="script.js"></script>
+  </body>
+</html>

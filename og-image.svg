@@ -1,0 +1,21 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 630" font-family="Georgia, 'Playfair Display', serif">
+  <rect width="1200" height="630" fill="#0F0F0F"/>
+  <!-- soft brass glow top-right -->
+  <defs>
+    <radialGradient id="glow" cx="85%" cy="12%" r="70%">
+      <stop offset="0%" stop-color="#C8A96E" stop-opacity="0.18"/>
+      <stop offset="45%" stop-color="#C8A96E" stop-opacity="0.04"/>
+      <stop offset="100%" stop-color="#0F0F0F" stop-opacity="0"/>
+    </radialGradient>
+  </defs>
+  <rect width="1200" height="630" fill="url(#glow)"/>
+  <!-- brass marker -->
+  <rect x="100" y="232" width="64" height="2" fill="#C8A96E"/>
+  <!-- brand -->
+  <text x="100" y="170" font-family="Inter, Arial, sans-serif" font-size="26" letter-spacing="8" fill="#F0EDE8" font-weight="600">GOOISE BOUW MEESTERS</text>
+  <!-- headline -->
+  <text x="98" y="350" font-size="104" fill="#F0EDE8">Wij bouwen</text>
+  <text x="98" y="462" font-size="104" fill="#F0EDE8">wat <tspan font-style="italic" fill="#C8A96E">blijft</tspan>.</text>
+  <!-- meta -->
+  <text x="100" y="548" font-family="Inter, Arial, sans-serif" font-size="24" letter-spacing="2" fill="#888888">Loodgieter · Tegelzetter · Timmerman · Elektricien — 't Gooi</text>
+</svg>

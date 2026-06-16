@@ -1,0 +1,363 @@
+<!DOCTYPE html>
+<html lang="nl">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Gooise Bouw Meesters — Vakmanschap dat blijft</title>
+    <meta
+      name="description"
+      content="Gooise Bouw Meesters: loodgieterwerk, tegelzetwerk, timmerwerk en elektrawerk in 't Gooi. Eén ervaren team, werk dat klopt tot in het laatste detail."
+    />
+    <link rel="canonical" href="https://www.gooisebouwmeesters.nl/index.html" />
+    <link rel="icon" href="favicon.svg" type="image/svg+xml" />
+    <meta name="theme-color" content="#0F0F0F" />
+
+    <!-- Open Graph / Twitter -->
+    <meta property="og:type" content="website" />
+    <meta property="og:site_name" content="Gooise Bouw Meesters" />
+    <meta property="og:locale" content="nl_NL" />
+    <meta property="og:title" content="Gooise Bouw Meesters — Vakmanschap dat blijft" />
+    <meta property="og:description" content="Loodgieterwerk, tegelzetwerk, timmerwerk en elektrawerk in 't Gooi. Eén ervaren team, werk dat klopt tot in het laatste detail." />
+    <meta property="og:url" content="https://www.gooisebouwmeesters.nl/index.html" />
+    <meta property="og:image" content="https://www.gooisebouwmeesters.nl/og-image.png" />
+    <meta property="og:image:type" content="image/png" />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="Gooise Bouw Meesters — Vakmanschap dat blijft" />
+    <meta name="twitter:description" content="Loodgieterwerk, tegelzetwerk, timmerwerk en elektrawerk in 't Gooi." />
+    <meta name="twitter:image" content="https://www.gooisebouwmeesters.nl/og-image.png" />
+
+    <!-- LocalBusiness structured data -->
+    <script type="application/ld+json">
+      {
+        "@context": "https://schema.org",
+        "@type": "HomeAndConstructionBusiness",
+        "@id": "https://www.gooisebouwmeesters.nl/#business",
+        "name": "Gooise Bouw Meesters",
+        "url": "https://www.gooisebouwmeesters.nl/",
+        "image": "https://www.gooisebouwmeesters.nl/og-image.png",
+        "logo": "https://www.gooisebouwmeesters.nl/favicon.svg",
+        "telephone": "+31356789012",
+        "email": "werk@gooisebouwmeesters.nl",
+        "priceRange": "€€",
+        "foundingDate": "2009",
+        "address": {
+          "@type": "PostalAddress",
+          "streetAddress": "Ambachtsweg 14",
+          "postalCode": "1217 ME",
+          "addressLocality": "Hilversum",
+          "addressCountry": "NL"
+        },
+        "areaServed": [
+          { "@type": "City", "name": "Hilversum" },
+          { "@type": "City", "name": "Bussum" },
+          { "@type": "City", "name": "Naarden" },
+          { "@type": "City", "name": "Laren" },
+          { "@type": "City", "name": "Blaricum" },
+          { "@type": "City", "name": "Huizen" },
+          { "@type": "City", "name": "Weesp" },
+          { "@type": "City", "name": "Eemnes" }
+        ],
+        "openingHoursSpecification": [
+          {
+            "@type": "OpeningHoursSpecification",
+            "dayOfWeek": ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday"],
+            "opens": "08:00",
+            "closes": "18:00"
+          }
+        ],
+        "makesOffer": [
+          { "@type": "Offer", "itemOffered": { "@type": "Service", "name": "Loodgieterwerk" } },
+          { "@type": "Offer", "itemOffered": { "@type": "Service", "name": "Tegelzetwerk" } },
+          { "@type": "Offer", "itemOffered": { "@type": "Service", "name": "Timmerwerk" } },
+          { "@type": "Offer", "itemOffered": { "@type": "Service", "name": "Elektrawerk" } }
+        ]
+      }
+    </script>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Playfair+Display:ital,wght@0,500;0,600;1,500;1,600&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="style.css" />
+  </head>
+  <body data-menu="closed">
+    <a class="skip-link" href="#main">Naar inhoud</a>
+
+    <!-- Navigation -->
+    <header class="nav" id="nav">
+      <div class="wrap nav__inner">
+        <a href="index.html" class="brand" aria-label="Gooise Bouw Meesters home">
+          <span class="brand__mark" aria-hidden="true"></span>
+          Gooise Bouw Meesters
+        </a>
+
+        <nav aria-label="Hoofdnavigatie">
+          <ul class="nav__links">
+            <li><a class="nav__link" href="index.html" aria-current="page">Home</a></li>
+            <li><a class="nav__link" href="diensten.html">Diensten</a></li>
+            <li><a class="nav__link" href="contact.html">Contact</a></li>
+          </ul>
+        </nav>
+
+        <button class="nav__toggle" id="navToggle" aria-label="Menu openen" aria-expanded="false" aria-controls="drawer">
+          <span></span>
+          <span></span>
+        </button>
+      </div>
+    </header>
+
+    <!-- Mobile drawer -->
+    <div class="scrim" id="scrim" hidden></div>
+    <aside class="drawer" id="drawer" aria-label="Mobiel menu">
+      <ul class="drawer__links">
+        <li><a href="index.html" aria-current="page">Home</a></li>
+        <li><a href="diensten.html">Diensten</a></li>
+        <li><a href="contact.html">Contact</a></li>
+      </ul>
+      <div class="drawer__meta">
+        <a href="tel:+31356789012">035 678 90 12</a>
+        <a href="mailto:werk@gooisebouwmeesters.nl">werk@gooisebouwmeesters.nl</a>
+      </div>
+    </aside>
+
+    <main id="main">
+      <!-- Hero -->
+      <section class="hero">
+        <div class="hero__aurora" aria-hidden="true"></div>
+
+        <div class="wrap hero__inner">
+          <span class="marker" aria-hidden="true"></span>
+          <h1>
+            <span class="word" style="--i: 0">Wij</span>
+            <span class="word" style="--i: 1">bouwen</span><br />
+            <span class="word" style="--i: 2">wat</span>
+            <span class="word em" style="--i: 3">blijft</span><span class="word" style="--i: 3">.</span>
+          </h1>
+          <p class="hero__sub">
+            Eén ervaren team voor het hele huis in 't Gooi. Geen
+            onderaannemers, geen losse eindjes — werk dat klopt tot in het
+            laatste detail.
+          </p>
+          <a href="contact.html" class="btn hero__cta">
+            Vraag een offerte aan
+            <span class="arrow" aria-hidden="true">&rarr;</span>
+          </a>
+        </div>
+
+        <span class="hero__scroll" aria-hidden="true">Scroll</span>
+      </section>
+
+      <hr class="divider" />
+
+      <!-- Services list -->
+      <section class="services" aria-label="Diensten">
+        <div class="wrap">
+          <a class="service-row reveal" href="diensten.html#loodgieterwerk">
+            <span class="service-row__name">Loodgieterwerk</span>
+            <span class="service-row__desc">Leidingen, sanitair &amp; lekkages</span>
+          </a>
+          <a class="service-row reveal" href="diensten.html#tegelzetwerk">
+            <span class="service-row__name">Tegelzetwerk</span>
+            <span class="service-row__desc">Wand, vloer &amp; natuursteen</span>
+          </a>
+          <a class="service-row reveal" href="diensten.html#timmerwerk">
+            <span class="service-row__name">Timmerwerk</span>
+            <span class="service-row__desc">Maatwerk, kozijnen &amp; afbouw</span>
+          </a>
+          <a class="service-row reveal" href="diensten.html#elektrawerk">
+            <span class="service-row__name">Elektrawerk</span>
+            <span class="service-row__desc">Groepenkast, bekabeling &amp; verlichting</span>
+          </a>
+        </div>
+      </section>
+
+      <hr class="divider" />
+
+      <!-- Over ons -->
+      <section class="section about" id="over-ons">
+        <div class="wrap about__grid">
+          <div class="about__body">
+            <div class="s-head">
+              <span class="label reveal">Over ons</span>
+              <h2 class="reveal">Eén hand, vier ambachten.</h2>
+            </div>
+            <p class="reveal">
+              Gooise Bouw Meesters is een klein atelier van vaklieden die hun
+              werk al meer dan vijftien jaar verstaan. Elke meester is
+              ambachtelijk gespecialiseerd in één van de vier vakken —
+              loodgieten, tegelzetten, timmeren of elektra.
+            </p>
+            <p class="reveal">
+              Van een lekkende leiding tot een complete badkamer of een nieuwe
+              groepenkast — u heeft één aanspreekpunt en één team dat
+              verantwoordelijkheid neemt.
+            </p>
+
+            <div class="stats reveal">
+              <div class="stat">
+                <div class="stat__num">15+</div>
+                <div class="stat__txt">Jaar ervaring</div>
+              </div>
+              <div class="stat">
+                <div class="stat__num">4</div>
+                <div class="stat__txt">Ambachten onder één dak</div>
+              </div>
+            </div>
+          </div>
+
+          <span class="about__year" aria-hidden="true">2009</span>
+        </div>
+      </section>
+
+      <hr class="divider" />
+
+      <!-- Waarom -->
+      <section class="section why" id="waarom">
+        <div class="wrap why__grid">
+          <div class="s-head why__head">
+            <span class="label reveal">Waarom wij</span>
+            <h2 class="reveal">Werk zonder zorgen,<br />van begin tot oplevering.</h2>
+          </div>
+
+          <ul class="why__list">
+            <li class="why__item reveal">
+              <h3 class="why__title">Eén team voor het hele huis</h3>
+              <p class="why__desc">
+                Loodgieter, tegelzetter, timmerman en elektricien onder één
+                dak. Geen onderaannemers, één vast aanspreekpunt.
+              </p>
+            </li>
+            <li class="why__item reveal">
+              <h3 class="why__title">Vaste prijsafspraak vooraf — geen verrassingen</h3>
+              <p class="why__desc">
+                U weet wat u betaalt voordat wij beginnen. Geen meerwerk dat
+                niet is afgesproken, geen onverwachte rekening achteraf.
+              </p>
+            </li>
+            <li class="why__item reveal">
+              <h3 class="why__title">Gegarandeerd vakwerk, netjes opgeleverd</h3>
+              <p class="why__desc">
+                Strak afgewerkt en schoon achtergelaten. Wij zijn pas klaar
+                als het klopt — met garantie op het geleverde werk.
+              </p>
+            </li>
+            <li class="why__item reveal">
+              <h3 class="why__title">Binnen één werkdag een reactie</h3>
+              <p class="why__desc">
+                Vraag een offerte aan en u hoort meestal dezelfde of de
+                volgende werkdag van ons. Korte lijnen, duidelijke afspraken.
+              </p>
+            </li>
+          </ul>
+        </div>
+      </section>
+
+      <hr class="divider" />
+
+      <!-- Reviews -->
+      <section class="section reviews" aria-label="Klantbeoordelingen">
+        <div class="wrap">
+          <div class="s-head">
+            <span class="label reveal">Wat klanten zeggen</span>
+            <h2 class="reveal">Werk dat zich laat navertellen.</h2>
+          </div>
+
+          <ul class="quote-list">
+            <li class="quote reveal">
+              <blockquote class="quote__text">
+                Strak tegelwerk en een badkamer die tot in de hoeken klopt.
+                Netjes gewerkt, elke dag opgeruimd achtergelaten.
+              </blockquote>
+              <p class="quote__by">Familie de Vries — Bussum</p>
+            </li>
+            <li class="quote reveal">
+              <blockquote class="quote__text">
+                Snel een offerte, een eerlijke prijs en precies opgeleverd wat
+                was afgesproken. Eén aanspreekpunt voor het hele klusje.
+              </blockquote>
+              <p class="quote__by">M. Jansen — Hilversum</p>
+            </li>
+            <li class="quote reveal">
+              <blockquote class="quote__text">
+                Oude leiding vervangen en meteen de groepenkast vernieuwd.
+                Vakmensen die weten wat ze doen, zonder gedoe.
+              </blockquote>
+              <p class="quote__by">R. Bakker — Naarden</p>
+            </li>
+          </ul>
+        </div>
+      </section>
+
+      <hr class="divider" />
+
+      <!-- Werkgebied -->
+      <section class="section area" id="werkgebied">
+        <div class="wrap area__grid">
+          <div class="s-head area__head">
+            <span class="label reveal">Werkgebied</span>
+            <h2 class="reveal">Thuis in 't Gooi<br />en omstreken.</h2>
+          </div>
+          <ul class="area__places reveal" aria-label="Plaatsen die wij bedienen">
+            <li>Hilversum</li>
+            <li>Bussum</li>
+            <li>Naarden</li>
+            <li>Laren</li>
+            <li>Blaricum</li>
+            <li>Huizen</li>
+            <li>Weesp</li>
+            <li>Eemnes</li>
+            <li>Muiden</li>
+          </ul>
+        </div>
+      </section>
+
+      <hr class="divider" />
+
+      <!-- CTA banner -->
+      <section class="cta">
+        <div class="wrap cta__inner">
+          <h2 class="reveal">Een klus die om vakmanschap vraagt?</h2>
+          <div class="cta__contacts reveal">
+            <div class="cta__contact">
+              <span class="label">Bel direct</span>
+              <a href="tel:+31356789012">035 678 90 12</a>
+            </div>
+            <div class="cta__contact">
+              <span class="label">Of mail ons</span>
+              <a href="mailto:werk@gooisebouwmeesters.nl">werk@gooisebouwmeesters.nl</a>
+            </div>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <!-- Footer -->
+    <footer class="footer">
+      <div class="wrap">
+        <div class="footer__inner">
+          <span class="footer__brand">Gooise Bouw Meesters</span>
+          <ul class="footer__nav">
+            <li><a href="index.html">Home</a></li>
+            <li><a href="diensten.html">Diensten</a></li>
+            <li><a href="contact.html">Contact</a></li>
+            <li><a href="privacy.html">Privacy</a></li>
+          </ul>
+        </div>
+        <div class="footer__legal">
+          <span>Verzekerd · Garantie op al ons werk</span>
+          <span>KVK 12345678 · BTW NL000000000B00</span>
+        </div>
+      </div>
+    </footer>
+
+    <a class="callbar" href="tel:+31356789012" aria-label="Bel Gooise Bouw Meesters">
+      Bel ons — 035 678 90 12
+    </a>
+
+    <script src="script.js"></script>
+  </body>
+</html>
