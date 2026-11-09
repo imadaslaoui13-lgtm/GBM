@@ -1,0 +1,451 @@
+<!doctype html>
+<html lang="nl">
+<head>
+<meta charset="utf-8">
+<title>LA Automotive motion (v2)</title>
+<style>
+  html,body{margin:0;background:#0b0b0c;overflow:hidden}
+  canvas{display:block;height:100vh;width:auto;margin:0 auto}
+</style>
+</head>
+<body>
+<canvas id="c" width="1080" height="1920"></canvas>
+<svg width="0" height="0" style="position:absolute"><path id="mp"/></svg>
+<script>
+/* LA Automotive v2 - 25s 9:16 flat motion graphic.
+   One clock: every frame is computed from t alone. window.seek(t) draws that moment.
+   No text, no logos. Top third (y < 640) stays empty. Key content sits in the
+   reel safe zone (y 660-1440), so app buttons and captions never cover it. */
+const cv = document.getElementById('c'), x = cv.getContext('2d');
+const W = 1080, H = 1920, DUR = 25;
+const C = {
+  bg: '#0b0b0c', ink: '#f4f4f1', surf: '#161618', surf2: '#222226', dark: '#1b1b1e',
+  mute: 'rgba(244,244,241,0.10)', mute2: 'rgba(244,244,241,0.34)',
+  orange: '#ff8a1f', green: '#2fd27a', sun: '#ffb04a', tail: '#ff5a3c'
+};
+const cl = (v, a = 0, b = 1) => Math.min(b, Math.max(a, v));
+const P = (t, a, b) => cl((t - a) / (b - a));
+const lerp = (a, b, k) => a + (b - a) * k;
+const eo = k => 1 - Math.pow(1 - k, 3);
+const eio = k => k < .5 ? 4 * k * k * k : 1 - Math.pow(-2 * k + 2, 3) / 2;
+const eb = k => { const c1 = 1.3, c3 = c1 + 1; return 1 + c3 * Math.pow(k - 1, 3) + c1 * Math.pow(k - 1, 2); };
+const hex = h => [1, 3, 5].map(i => parseInt(h.slice(i, i + 2), 16));
+const mix = (a, b, k) => { const A = hex(a), B = hex(b); return `rgb(${A.map((v, i) => Math.round(lerp(v, B[i], k))).join(',')})`; };
+const f = n => n.toFixed(2);
+
+const mp = document.getElementById('mp'); const LC = new Map();
+function plen(d) { let v = LC.get(d); if (v === undefined) { mp.setAttribute('d', d); v = mp.getTotalLength(); if (LC.size > 4000) LC.clear(); LC.set(d, v); } return v; }
+function strokeD(d, p, col, w, a = 1) {
+  if (p <= 0 || a <= 0) return;
+  const L = plen(d); x.save(); x.globalAlpha *= a; x.strokeStyle = col; x.lineWidth = w;
+  x.lineCap = 'round'; x.lineJoin = 'round'; if (p < 1) x.setLineDash([L * p, L + 2]);
+  x.stroke(new Path2D(d)); x.restore();
+}
+function fillD(d, col, a = 1) { if (a <= 0) return; x.save(); x.globalAlpha *= a; x.fillStyle = col; x.fill(new Path2D(d)); x.restore(); }
+function rr(cx, cy, w, h, r, tip = 0) {
+  w = Math.max(w, .01); h = Math.max(h, .01);
+  const x0 = cx - w / 2, y0 = cy - h / 2, x1 = cx + w / 2, y1 = cy + h / 2; r = Math.max(0, Math.min(r, w / 2, h / 2));
+  return `M${f(x0 + r)} ${f(y0)}L${f(x1 - r)} ${f(y0)}Q${f(x1)} ${f(y0)} ${f(x1)} ${f(y0 + r)}L${f(x1)} ${f(y1 - r)}Q${f(x1)} ${f(y1)} ${f(x1 - r)} ${f(y1)}L${f(x0 + r)} ${f(y1)}Q${f(x0)} ${f(y1)} ${f(x0)} ${f(y1 - r)}L${f(x0 - tip)} ${f(cy)}L${f(x0)} ${f(y0 + r)}Q${f(x0)} ${f(y0)} ${f(x0 + r)} ${f(y0)}Z`;
+}
+function circ(cx, cy, r, start = -Math.PI / 2) { // full circle as arcs, starting at `start`
+  const p = a => `${f(cx + r * Math.cos(a))} ${f(cy + r * Math.sin(a))}`;
+  return `M${p(start)}A${f(r)} ${f(r)} 0 1 1 ${p(start + Math.PI)}A${f(r)} ${f(r)} 0 1 1 ${p(start + 2 * Math.PI - 1e-4)}`;
+}
+function arc(cx, cy, r, a0, a1) {
+  const p = a => `${f(cx + r * Math.cos(a))} ${f(cy + r * Math.sin(a))}`;
+  return `M${p(a0)}A${f(r)} ${f(r)} 0 ${(a1 - a0) > Math.PI ? 1 : 0} 1 ${p(a1)}`;
+}
+function dot(cx, cy, r, col, a = 1) { if (a <= 0 || r <= 0) return; x.save(); x.globalAlpha *= a; x.fillStyle = col; x.beginPath(); x.arc(cx, cy, r, 0, Math.PI * 2); x.fill(); x.restore(); }
+function ring(cx, cy, r, col, w, a = 1) { if (a <= 0 || r <= 0) return; x.save(); x.globalAlpha *= a; x.strokeStyle = col; x.lineWidth = w; x.beginPath(); x.arc(cx, cy, r, 0, Math.PI * 2); x.stroke(); x.restore(); }
+function line(x1, y1, x2, y2, col, w, a = 1) { if (a <= 0) return; x.save(); x.globalAlpha *= a; x.strokeStyle = col; x.lineWidth = w; x.lineCap = 'round'; x.beginPath(); x.moveTo(x1, y1); x.lineTo(x2, y2); x.stroke(); x.restore(); }
+function at(cx, cy, s, fn, rot = 0) { x.save(); x.translate(cx, cy); if (rot) x.rotate(rot); x.scale(s, s); fn(); x.restore(); }
+
+/* icons */
+const ENGINE = 'M-22 -16H-8V-22H-16V-28H12V-22H4V-16H20L28 -8H36V-14H42V18H36V12H28L20 24H-14L-22 16H-30V8H-38V-6H-30V-8Z';
+function engine(cx, cy, size, col, drawP, fillA) {
+  at(cx, cy, size / 100, () => { if (fillA > 0) fillD(ENGINE, col, fillA); strokeD(ENGINE, drawP, col, 7); });
+}
+/* side-view hatchback, local box 0..484 x 0..160, nose to the right */
+const CAR_BODY = 'M14 118L14 96Q14 84 30 80L96 70L150 34Q162 26 180 26L330 26Q350 26 364 40L404 72L450 80Q470 84 470 100L470 118Q470 126 462 126L22 126Q14 126 14 118Z';
+const CAR_WIN_R = 'M168 42L252 42L252 72L124 72Z';
+const CAR_WIN_F = 'M266 42L326 42Q340 42 350 52L372 72L266 72Z';
+function sideCar(spin, col = C.ink) {
+  fillD(CAR_BODY, col); fillD(CAR_WIN_R, C.dark); fillD(CAR_WIN_F, C.dark);
+  line(34, 98, 452, 98, C.dark, 3, .3);
+  fillD(rr(240, 88, 22, 6, 3), C.dark, .5);
+  fillD(rr(458, 94, 16, 9, 4), C.dark, .8);
+  [112, 376].forEach(wx => {
+    dot(wx, 126, 37, C.bg); ring(wx, 126, 29, col, 10); dot(wx, 126, 11, col);
+    for (let k = 0; k < 5; k++) { const a = spin + k * 1.2566; dot(wx + Math.cos(a) * 18, 126 + Math.sin(a) * 18, 3, col); }
+  });
+}
+
+/* background dots */
+const grid = document.createElement('canvas'); grid.width = W; grid.height = H;
+(() => { const g = grid.getContext('2d');
+  for (let yy = 30; yy < H; yy += 60) for (let xx = 30; xx < W; xx += 60) {
+    const a = 0.05 * cl((yy - 660) / 140); if (a <= 0) continue;
+    g.fillStyle = `rgba(244,244,241,${a})`; g.beginPath(); g.arc(xx, yy, 1.8, 0, 7); g.fill(); }
+})();
+
+/* one container that morphs through every scene */
+const CY = 1050;
+const S = {
+  dash: { cx: 540, cy: CY, w: 920, h: 500, r: 110, tip: 0 },
+  phone: { cx: 540, cy: CY, w: 430, h: 760, r: 62, tip: 0 },
+  tag: { cx: 575, cy: CY, w: 540, h: 300, r: 34, tip: 120 },
+  cal: { cx: 540, cy: 1070, w: 600, h: 540, r: 46, tip: 0 },
+  floor: { cx: 540, cy: 1400, w: 960, h: 6, r: 3, tip: 0 },
+  dot: { cx: 880, cy: 880, w: 24, h: 24, r: 12, tip: 0 },
+  mini: { cx: 880, cy: 880, w: 200, h: 354, r: 30, tip: 0 }
+};
+const SEGS = [
+  [3.3, 4.1, 'dash', 'phone', eio], [7.4, 8.2, 'phone', 'tag', eb], [9.8, 10.5, 'tag', 'cal', eio],
+  [13.0, 13.7, 'cal', 'floor', eio], [17.3, 17.9, 'dot', 'mini', eb], [18.7, 19.4, 'mini', 'phone', eio]
+];
+function cont(t) {
+  let st = S.dash;
+  for (const [a, b, A, B, e] of SEGS) {
+    if (t >= b) { st = S[B]; continue; }
+    if (t >= a) { const k = e(P(t, a, b)); st = {}; for (const key in S[A]) st[key] = lerp(S[A][key], S[B][key], k); }
+    break;
+  }
+  return st;
+}
+function contAlpha(t) {
+  if (t < 13.6) return 1;
+  if (t < 13.75) return 1 - P(t, 13.6, 13.75);
+  if (t < 17.3) return 0;
+  return P(t, 17.3, 17.45) * (1 - P(t, 20.9, 21.4));
+}
+function drawCont(t, st) {
+  const a = contAlpha(t); if (a <= 0) return;
+  const d = rr(st.cx, st.cy, st.w, st.h, st.r, st.tip);
+  x.save(); x.globalAlpha = a;
+  fillD(d, C.surf, P(t, 0.4, 1.2));
+  strokeD(d, eo(P(t, 0.05, 1.15)), C.ink, 6);
+  x.restore();
+}
+/* the price tag swings on its string, then settles */
+const swing = t => (t < 7.4 || t > 10.3) ? 0 : 0.2 * Math.exp(-Math.max(0, t - 7.8) * 2.0) * Math.sin((t - 7.4) * 8) * (1 - P(t, 9.7, 10.2));
+
+/* 1. dashboard */
+function sDash(t) {
+  const out = P(t, 3.15, 3.6), a = 1 - out; if (a <= 0) return;
+  x.save(); x.globalAlpha = a * (1 - 0.4 * P(t, 1.9, 2.4));
+  const sc = 1 - 0.12 * eio(out); x.translate(540, CY); x.scale(sc, sc); x.translate(-540, -CY);
+  const a0 = Math.PI * 0.75, a1 = Math.PI * 2.25;
+  [[310, CY], [770, CY]].forEach(([gx, gy], i) => {
+    const st = 0.3 + i * 0.12;
+    strokeD(arc(gx, gy, 150, a0, a1), eo(P(t, st, st + 0.8)), C.mute2, 10);
+    for (let k = 0; k <= 12; k++) {
+      const kp = eo(P(t, st + 0.3 + k * 0.03, st + 0.5 + k * 0.03)); if (kp <= 0) continue;
+      const an = a0 + (a1 - a0) * k / 12, big = k % 3 === 0;
+      line(gx + Math.cos(an) * 126, gy + Math.sin(an) * 126, gx + Math.cos(an) * (big ? 98 : 110), gy + Math.sin(an) * (big ? 98 : 110), C.ink, big ? 6 : 3.5, kp);
+    }
+    // start-up sweep: needle runs to the end and falls back to its value
+    const s = t - (0.85 + i * 0.1), tgt = i ? 0.3 : 0.47;
+    let v = eio(P(s, 0, 0.5)) * (1 - eio(P(s, 0.55, 1.1)) * (1 - tgt));
+    v += Math.sin(t * 2.4 + i * 2) * 0.01 * P(s, 1.1, 1.4);
+    const an = a0 + (a1 - a0) * v, na = P(t, st + 0.45, st + 0.6);
+    strokeD(arc(gx, gy, 150, a0, a0 + Math.max(0.001, (a1 - a0) * v)), na, C.ink, 10);
+    line(gx, gy, gx + Math.cos(an) * 108, gy + Math.sin(an) * 108, C.ink, 7, na);
+    dot(gx, gy, 17, C.ink, na); dot(gx, gy, 6, C.surf, na);
+  });
+  for (let k = 0; k < 4; k++) fillD(rr(540 - 54 + k * 36, CY + 150, 22, 8, 4), k === 1 ? C.ink : C.mute2, eo(P(t, 0.9 + k * 0.06, 1.2 + k * 0.06)));
+  x.restore();
+}
+/* warning light: travels from the dashboard into the phone header */
+function warnIcon(t) {
+  const a = P(t, 0.9, 1.0) * (1 - P(t, 7.15, 7.45)); if (a <= 0) return;
+  const k = eio(P(t, 3.3, 4.1));
+  const cx = 540, cy = lerp(CY, 822, k), size = lerp(128, 72, k);
+  const on = t >= 1.55, pop = t < 2.2 ? eb(P(t, 1.55, 1.9)) : 1;
+  x.save(); x.globalAlpha = a;
+  if (!on) engine(cx, cy, size * 0.9, C.mute2, eo(P(t, 0.9, 1.4)), 0);
+  else {
+    if (t < 3.4) for (let i = 0; i < 2; i++) { const ph = ((t - 1.6 + i * 0.42) % 0.84) / 0.84; ring(cx, cy, 78 + 62 * ph, C.orange, 5, (1 - ph) * 0.5 * P(t, 1.6, 1.8)); }
+    if (t > 4.3 && t < 7.1) { const ph = ((t - 4.3) % 1.1) / 1.1; ring(cx, cy, 46 + 30 * ph, C.orange, 4, (1 - ph) * 0.4); }
+    dot(cx, cy, size * 0.7 * pop, C.orange, 0.15);
+    engine(cx, cy, size * (0.9 + 0.1 * pop), C.orange, 1, 1);
+  }
+  x.restore();
+}
+
+/* 2. phone with licence plate field */
+function sPhone(t, st) {
+  const a = P(t, 3.9, 4.3) * (1 - P(t, 7.05, 7.35)); if (a <= 0) return;
+  x.save(); x.globalAlpha = a;
+  fillD(rr(540, st.cy - st.h / 2 + 34, 104, 20, 10), C.ink, 0.9);
+  fillD(rr(540, st.cy + st.h / 2 - 26, 130, 8, 4), C.mute2);
+  fillD(rr(540, 906, 240 * eo(P(t, 4.3, 4.7)), 16, 8), C.mute2, P(t, 4.3, 4.4));
+  fillD(rr(540, 938, 160 * eo(P(t, 4.4, 4.8)), 16, 8), C.mute, P(t, 4.4, 4.5));
+  const py = 1040, pw = 360, ph = 96, px0 = 540 - pw / 2;
+  const pk = eb(P(t, 4.45, 4.85));
+  if (pk > 0) {
+    at(540, py, pk, () => {
+      fillD(rr(0, 0, pw, ph, 14), C.surf2); strokeD(rr(0, 0, pw, ph, 14), 1, C.ink, 5);
+      fillD(rr(-pw / 2 + 30, 0, 42, ph - 16, 8), C.mute2);
+      for (let k = 0; k < 12; k++) { const an = k / 12 * Math.PI * 2; dot(-pw / 2 + 30 + Math.cos(an) * 11, -14 + Math.sin(an) * 11, 2.2, C.ink); }
+      fillD(rr(-pw / 2 + 30, 24, 18, 7, 3), C.ink);
+    });
+  }
+  const xs = [430, 468, 536, 574, 642, 680], dashes = [513, 619];
+  let caretX = 424;
+  xs.forEach((cx0, i) => {
+    const s = 5.0 + i * 0.16, k = P(t, s, s + 0.22); if (k <= 0) return;
+    caretX = cx0 + 36;
+    fillD(rr(cx0 + 14, py + 10 * (1 - eb(k)), 28, 50 * eb(k), 6), C.ink, P(t, s, s + 0.05));
+    if (i === 1 || i === 3) fillD(rr(dashes[i >> 1], py, 12, 6, 3), C.ink, P(t, s + 0.08, s + 0.14));
+  });
+  const caretOn = t < 5.0 ? Math.floor(t * 2.6) % 2 === 0 : t < 6.0;
+  if (caretOn && t > 4.9) fillD(rr(caretX, py, 4, 56, 2), C.orange);
+  // plate confirmed: outline flashes
+  if (t > 5.95 && t < 6.4) strokeD(rr(540, py, pw + 14, ph + 14, 20), 1, C.ink, 3, 1 - P(t, 5.95, 6.4));
+  const by = 1210, fillOn = P(t, 6.2, 6.35);
+  fillD(rr(540, by, 290, 84, 42), C.orange, fillOn);
+  strokeD(rr(540, by, 290, 84, 42), eo(P(t, 5.7, 6.1)), fillOn > 0.5 ? C.orange : C.ink, 5);
+  strokeD(`M528 ${by - 18}L546 ${by}L528 ${by + 18}`, eo(P(t, 5.95, 6.15)), fillOn > 0.5 ? C.bg : C.ink, 7);
+  const fa = P(t, 5.85, 6.0) * (1 - P(t, 6.3, 6.5));
+  dot(606, lerp(by + 90, by + 10, eo(P(t, 5.85, 6.18))), t > 6.18 ? 19 : 22, C.ink, fa * 0.9);
+  if (t > 6.2 && t < 6.75) { const k = P(t, 6.2, 6.75); ring(606, by + 10, 14 + 90 * eo(k), C.ink, 4, (1 - k) * 0.7); }
+  x.restore();
+}
+
+/* 3. price tag (drawn inside the swing transform) */
+function sTag(t, st) {
+  const a = P(t, 8.0, 8.25) * (1 - P(t, 9.6, 9.85)); if (a <= 0) return;
+  x.save(); x.globalAlpha = a;
+  const bx = st.cx - 150, k1 = eo(P(t, 8.2, 8.6));
+  dot(bx - 44, st.cy - 44, 30 * eb(P(t, 8.15, 8.45)), C.ink);               // coin
+  dot(bx - 44, st.cy - 44, 17 * eb(P(t, 8.2, 8.5)), C.surf);
+  if (k1 > 0) fillD(rr(bx + 10 + 115 * k1, st.cy - 44, 230 * k1, 54, 14), C.ink);
+  const k2 = eo(P(t, 8.35, 8.7)), k3 = eo(P(t, 8.45, 8.8));
+  if (k2 > 0) fillD(rr(bx - 74 + 170 * k2, st.cy + 34, 340 * k2, 16, 8), C.mute2);
+  if (k3 > 0) fillD(rr(bx - 74 + 110 * k3, st.cy + 68, 220 * k3, 16, 8), C.mute);
+  const bxp = st.cx + st.w / 2 - 20, byp = st.cy - st.h / 2 + 6, bk = eb(P(t, 8.7, 9.0));
+  if (bk > 0) {
+    dot(bxp, byp, 54 * bk, C.ink);
+    strokeD(`M${bxp - 22} ${byp + 1}L${bxp - 6} ${byp + 17}L${bxp + 23} ${byp - 14}`, eo(P(t, 8.85, 9.12)), C.bg, 9);
+  }
+  if (t > 9.0 && t < 9.5) { const k = P(t, 9.0, 9.5); for (let i = 0; i < 6; i++) { const an = i / 6 * Math.PI * 2 - .3, r0 = 66 + 26 * eo(k); line(bxp + Math.cos(an) * r0, byp + Math.sin(an) * r0, bxp + Math.cos(an) * (r0 + 14), byp + Math.sin(an) * (r0 + 14), C.ink, 4, 1 - k); } }
+  x.restore();
+}
+function tagString(t, st) {
+  const a = P(t, 7.9, 8.2) * (1 - P(t, 9.6, 9.85)); if (a <= 0) return;
+  const hx = st.cx - st.w / 2 + 34, hy = st.cy;
+  x.save(); x.globalAlpha = a;
+  strokeD(`M${f(hx)} ${f(hy)}C${f(hx - 60)} ${f(hy - 100)} ${f(hx + 10)} ${f(hy - 170)} ${f(hx - 90)} ${f(hy - 240)}`, eo(P(t, 8.0, 8.5)), C.mute2, 5);
+  dot(hx, hy, 17, C.bg); ring(hx, hy, 17, C.ink, 5);
+  x.restore();
+}
+
+/* 4. calendar: every day fills, weekend included */
+function sCal(t, st) {
+  const a = P(t, 10.3, 10.6) * (1 - P(t, 12.9, 13.15)); if (a <= 0) return;
+  x.save(); x.globalAlpha = a;
+  const y0 = st.cy - st.h / 2;
+  x.save(); x.clip(new Path2D(rr(st.cx, st.cy, st.w, st.h, st.r)));
+  x.globalAlpha *= P(t, 10.45, 10.75); x.fillStyle = C.surf2; x.fillRect(st.cx - st.w / 2, y0, st.w, 104);
+  x.restore();
+  fillD(rr(540, y0 + 54, 180 * eo(P(t, 10.55, 10.9)), 18, 9), C.mute2);
+  [-150, 150].forEach((dx, i) => { const k = eb(P(t, 10.45 + i * .06, 10.75 + i * .06)); if (k > 0) fillD(rr(540 + dx, y0, 22, 64 * k, 11), C.ink); });
+  for (let i = 0; i < 4; i++) for (let j = 0; j < 7; j++) {
+    const cx = 312 + 76 * j, cy = 968 + 88 * i, d0 = 10.6 + (i + j) * 0.03;
+    strokeD(rr(cx, cy, 56, 56, 15), eo(P(t, d0, d0 + 0.25)), C.mute2, 3);
+    let k, s;
+    if (j < 5) { s = 11.05 + (i * 5 + j) * 0.03; k = eo(P(t, s, s + 0.2)); }
+    else { s = 11.95 + i * 0.07 + (j - 5) * 0.035; k = eb(P(t, s, s + 0.3)); }
+    if (k > 0) {
+      fillD(rr(cx, cy, 56 * k, 56 * k, 15 * k), C.ink, Math.min(1, k * 2));
+      strokeD(`M${cx - 11} ${cy + 1}L${cx - 3} ${cy + 9}L${cx + 12} ${cy - 8}`, eo(P(t, s + 0.1, s + 0.3)), C.bg, 5);
+    }
+  }
+  strokeD(rr(730, 1100, 164, 348, 28), eo(P(t, 12.3, 12.85)), C.ink, 5);
+  x.restore();
+}
+
+/* 5. workshop */
+const FLOOR = 1400;
+const platY = t => 1362 - 150 * eio(P(t, 15.6, 16.4));
+const carX = t => lerp(-560, 297, eo(P(t, 14.55, 15.45)));
+const hotspot = t => [carX(t) + 418, platY(t) - 108];
+function sShop(t) {
+  const a = P(t, 13.6, 13.75) * (1 - P(t, 18.7, 19.2)); if (a <= 0) return;
+  x.save(); x.globalAlpha = a;
+  const dim = 1 - 0.6 * P(t, 17.2, 17.6);
+  line(60, FLOOR, 1020, FLOOR, C.ink, 6);
+  strokeD('M90 1400V860L540 700L990 860V1400', eo(P(t, 13.8, 14.8)), C.mute2, 6, dim);
+  const la = P(t, 14.6, 14.9) * dim;
+  line(540, 704, 540, 762, C.mute2, 4, la);
+  fillD('M500 794L522 762L558 762L580 794Z', C.ink, la);
+  fillD('M505 798L575 798L720 1400L360 1400Z', C.ink, la * 0.045);
+  // tool wall: three simple shapes
+  [[150, 1000], [150, 1060], [150, 1120]].forEach(([wx, wy], i) => fillD(rr(wx + 14 * i, wy, 44 + 28 * i, 10, 5), C.mute2, eo(P(t, 14.3 + i * .08, 14.6 + i * .08)) * dim * (1 - P(t, 15.9, 16.1))));
+  const pk = eo(P(t, 14.2, 14.7));
+  [250, 830].forEach(px => { if (pk > 0) { fillD(rr(px, FLOOR - 180 * pk, 28, 360 * pk, 6), C.mute2); fillD(rr(px, FLOOR - 360 * pk, 46, 14, 5), C.ink, pk); } });
+  const py = platY(t);
+  fillD(rr(540, py + 8, 620, 16, 8), C.ink, P(t, 14.5, 14.8));
+  if (t > 15.6) [330, 750].forEach(px => fillD(rr(px, (py + 16 + FLOOR) / 2, 14, Math.max(0.01, FLOOR - py - 16), 4), C.mute2, P(t, 15.6, 15.7)));
+  const cxL = carX(t);
+  if (t > 14.5) at(cxL, py - 160, 1, () => sideCar(cxL / 34));
+  const wb = eb(P(t, 15.25, 15.55));
+  if (wb > 0) { const bx = cxL + 436, by = py - 204; dot(bx, by, 30 * wb, C.orange); engine(bx, by, 36 * wb, C.bg, 1, 1); }
+  const mk = eb(P(t, 16.0, 16.35));
+  if (mk > 0) at(170, 960, mk, () => {
+    dot(0, 0, 64, C.surf); ring(0, 0, 64, C.ink, 5);
+    fillD('M-32 42Q-32 10 0 10Q32 10 32 42Z', C.ink);
+    dot(0, -12, 17, C.ink);
+    fillD('M-19 -20Q-19 -41 0 -41Q19 -41 19 -20Z', C.orange);
+    fillD(rr(8, -21, 32, 7, 3), C.orange);
+  });
+  const sk = P(t, 16.45, 17.45);
+  if (sk > 0 && sk < 1) {
+    const bxs = lerp(cxL + 12, cxL + 474, eio(sk)), ta = Math.sin(Math.PI * sk);
+    x.save(); x.globalAlpha *= 0.16 * ta; x.fillStyle = C.orange; x.fillRect(bxs - 44, py - 176, 44, 182); x.restore();
+    line(bxs, py - 182, bxs, py + 4, C.orange, 5, ta);
+    line(234, 960, bxs, py - 182, C.orange, 3, ta * 0.3);
+  }
+  const [hx, hy] = hotspot(t);
+  if (t > 17.1) {
+    const k = P(t, 17.1, 17.4);
+    ring(hx, hy, 34 * eb(k), C.orange, 5);
+    const ph = ((t - 17.1) % 0.7) / 0.7; ring(hx, hy, 34 + 30 * ph, C.orange, 3, (1 - ph) * 0.5 * k);
+    // camera corner brackets around the find
+    const bk = eo(P(t, 17.3, 17.5)) * (1 - P(t, 17.6, 17.8)), r0 = 58;
+    [[-1, -1], [1, -1], [1, 1], [-1, 1]].forEach(([sx, sy]) => strokeD(`M${hx + sx * r0} ${hy + sy * (r0 - 20)}L${hx + sx * r0} ${hy + sy * r0}L${hx + sx * (r0 - 20)} ${hy + sy * r0}`, 1, C.ink, 5, bk));
+  }
+  x.restore();
+}
+function photoCard(cx, cy, s, rot, dotCol) {
+  at(cx, cy, s, () => {
+    fillD(rr(0, 0, 160, 116, 16), C.surf2); strokeD(rr(0, 0, 160, 116, 16), 1, C.ink, 4);
+    at(-62, -20, 0.26, () => sideCar(0));
+    fillD(rr(0, 40, 110, 8, 4), C.mute2);
+    dot(54, -34, 11, dotCol);
+  }, rot);
+}
+function sFlight(t) {
+  if (t < 17.55 || t > 18.35) return;
+  const [hx, hy] = hotspot(t), k = eio(P(t, 17.7, 18.3)), ex = 880, ey = 852;
+  const q = (p0, p1, p2) => (1 - k) ** 2 * p0 + 2 * (1 - k) * k * p1 + k * k * p2;
+  // motion trail
+  for (let i = 1; i <= 4; i++) { const kk = Math.max(0, k - i * 0.05), px = (1 - kk) ** 2 * hx + 2 * (1 - kk) * kk * 700 + kk * kk * ex, pyy = (1 - kk) ** 2 * hy + 2 * (1 - kk) * kk * 760 + kk * kk * ey; dot(px, pyy, 7 - i, C.ink, 0.25 * Math.sin(Math.PI * k)); }
+  photoCard(q(hx, 700, ex), q(hy, 760, ey), eb(P(t, 17.55, 17.75)) * lerp(1, 0.7, k), Math.sin(Math.PI * k) * 0.18, C.orange);
+}
+function flash(t) {
+  if (t < 17.5 || t > 17.85) return;
+  x.save(); x.globalAlpha = 0.2 * (1 - P(t, 17.5, 17.85)); x.fillStyle = C.ink; x.fillRect(0, 640, W, H - 640); x.restore();
+}
+
+/* 6. customer phone: photo arrives, approve */
+function sCustomer(t, st) {
+  if (t < 17.3) return;
+  const a = contAlpha(t); if (a <= 0) return;
+  const s = st.w / 430;
+  x.save(); x.globalAlpha = a; x.translate(st.cx, st.cy); x.scale(s, s);
+  fillD(rr(0, -346, 104, 20, 10), C.ink, 0.9 * P(t, 17.6, 17.8));
+  const green = P(t, 19.8, 20.0), dc = green > 0 ? mix(C.orange, C.green, green) : C.orange;
+  if (t >= 18.3) {
+    at(-24, -170, 1.7 * eb(P(t, 18.3, 18.55)), () => photoCard(0, 0, 1, 0, dc));
+    fillD('M-160 -72L-176 -52L-150 -66Z', C.ink, P(t, 18.4, 18.55));   // bubble tail
+    fillD(rr(-45, -22, 230, 16, 8), C.mute2, P(t, 18.45, 18.6));
+    fillD(rr(-75, 10, 170, 16, 8), C.mute, P(t, 18.5, 18.65));
+  }
+  const nk = eb(P(t, 18.32, 18.55)) * (1 - P(t, 18.8, 19.0));
+  if (nk > 0) dot(186, -358, 28 * nk, C.orange);
+  const by = 232, fillOn = P(t, 19.6, 19.75);
+  fillD(rr(0, by, 300, 88, 44), C.green, fillOn);
+  strokeD(rr(0, by, 300, 88, 44), eo(P(t, 19.15, 19.5)), fillOn > 0.5 ? C.green : C.ink, 5);
+  strokeD(`M-22 ${by}L-6 ${by + 16}L24 ${by - 14}`, eo(P(t, 19.3, 19.5)), fillOn > 0.5 ? C.bg : C.ink, 7);
+  const fa = P(t, 19.3, 19.42) * (1 - P(t, 19.7, 19.85));
+  dot(62, lerp(330, by + 8, eo(P(t, 19.3, 19.58))), 22, C.ink, fa * 0.9);
+  if (t > 19.6 && t < 20.1) { const k = P(t, 19.6, 20.1); ring(62, by + 8, 14 + 100 * eo(k), C.ink, 4, (1 - k) * 0.7); }
+  fillD(rr(0, 0, 430, 760, 62), C.bg, 0.6 * P(t, 19.75, 20.0));
+  x.restore();
+}
+
+/* 7. approval check that becomes the sun */
+const HORIZON = 1120;
+function hero(t) {
+  if (t < 19.75) return;
+  const g = eb(P(t, 19.75, 20.1)), m = eio(P(t, 20.9, 21.7));
+  const cx = 540, cy = lerp(CY, HORIZON, m) + 64 * eio(P(t, 21.7, 25));
+  const r = lerp(132 * g, 220, m), col = m > 0 ? mix(C.green, C.sun, m) : C.green;
+  for (let i = 0; i < 2; i++) { const k = P(t, 20.05 + i * 0.22, 20.95 + i * 0.22); if (k > 0 && k < 1) ring(540, CY, 142 + 340 * eo(k), C.green, 6 - i * 2, (1 - k) * 0.6); }
+  if (t > 20.0 && t < 20.6) { const k = P(t, 20.0, 20.6); for (let i = 0; i < 8; i++) { const an = i / 8 * Math.PI * 2 + .2, r0 = 160 + 60 * eo(k); line(540 + Math.cos(an) * r0, CY + Math.sin(an) * r0, 540 + Math.cos(an) * (r0 + 22), CY + Math.sin(an) * (r0 + 22), C.green, 6, 1 - k); } }
+  dot(cx, cy, r, col);
+  const ca = 1 - P(t, 20.9, 21.1);
+  if (ca > 0) strokeD(`M${cx - 56} ${cy + 4}L${cx - 16} ${cy + 44}L${cx + 62} ${cy - 40}`, eo(P(t, 19.95, 20.3)), C.ink, 18, ca);
+  if (t > 21.8) {
+    x.save(); x.beginPath(); x.arc(cx, cy, r, 0, 7); x.clip(); x.fillStyle = C.bg;
+    [[32, 13], [64, 10], [92, 7], [116, 5]].forEach(([dy, hh], i) => { const w = 2 * r * eo(P(t, 21.8 + i * .06, 22.3 + i * .06)); x.fillRect(cx - w / 2, HORIZON - dy - hh / 2, w, hh); });
+    x.restore();
+  }
+}
+function sDrive(t) {
+  if (t < 21.2) return;
+  x.save(); x.globalAlpha = P(t, 21.3, 21.7); x.fillStyle = C.bg; x.fillRect(0, HORIZON, W, H - HORIZON); x.restore();
+  const hk = eo(P(t, 21.9, 22.5));
+  if (hk > 0) {
+    x.save(); x.translate(0, 70 * (1 - hk)); x.beginPath(); x.rect(0, 0, W, HORIZON - 70 * (1 - hk)); x.clip();
+    fillD('M60 1120L190 1058L280 1086L370 1040L476 1120Z', '#1a1a1d');
+    fillD('M604 1120L700 1068L800 1092L905 1046L1020 1120Z', '#1a1a1d');
+    x.restore();
+  }
+  const hp = eo(P(t, 21.3, 21.9));
+  if (hp > 0) { line(540, HORIZON, 540 - 480 * hp, HORIZON, C.ink, 5); line(540, HORIZON, 540 + 480 * hp, HORIZON, C.ink, 5); }
+  const rp = eo(P(t, 21.6, 22.3));
+  strokeD('M520 1120L60 1940', rp, C.ink, 6); strokeD('M560 1120L1020 1940', rp, C.ink, 6);
+  const yz = z => HORIZON + 800 / z;
+  // centre dashes scroll toward the viewer while the car moves away
+  const scroll = Math.max(0, t - 22) * 0.9;
+  for (let n = 0; n < 22; n++) {
+    let z0 = 0.9 + ((n * 0.8 - scroll) % 17.6 + 17.6) % 17.6; const z1 = z0 + 0.36;
+    const k = P(t, 21.85, 22.25) * cl((17.6 - z0) / 3) * cl((z0 - 0.9) / 0.15 + 0.4);
+    if (k <= 0) continue;
+    const y0 = yz(z0), y1 = yz(z1), w0 = 11 / z0, w1 = 11 / z1;
+    fillD(`M${f(540 - w0)} ${f(y0)}L${f(540 + w0)} ${f(y0)}L${f(540 + w1)} ${f(y1)}L${f(540 - w1)} ${f(y1)}Z`, C.ink, k * 0.85);
+  }
+  if (t > 21.7) {
+    const ck = P(t, 22.0, 25.2), zc = 1.3 + 5.5 * Math.pow(ck, 1.7), s = 1.3 / zc;
+    const by = yz(zc) + 520 * (1 - eo(P(t, 21.7, 22.35)));
+    at(540, by + Math.sin(t * 22) * 1.5 * s, s, () => {
+      fillD(rr(0, 6, 400, 22, 11), '#000', 0.45);
+      fillD(rr(-150, -24, 54, 50, 10), '#2a2a2e'); fillD(rr(150, -24, 54, 50, 10), '#2a2a2e');
+      fillD('M-130 -134L-104 -210Q-100 -220 -86 -220L86 -220Q100 -220 104 -210L130 -134Z', C.ink);
+      fillD('M-102 -142L-82 -200L82 -200L102 -142Z', C.dark);
+      fillD(rr(0, -84, 380, 116, 28), C.ink);
+      fillD(rr(-140, -104, 70, 22, 9), C.tail); fillD(rr(140, -104, 70, 22, 9), C.tail);
+      fillD(rr(0, -104, 190, 6, 3), C.tail, 0.8);
+      fillD(rr(0, -62, 96, 30, 6), C.dark);
+      line(-170, -40, 170, -40, C.dark, 4, 0.35);
+    });
+  }
+}
+
+/* frame */
+function draw(t) {
+  t = cl(t, 0, DUR);
+  x.setTransform(1, 0, 0, 1, 0, 0); x.globalAlpha = 1; x.setLineDash([]);
+  x.fillStyle = C.bg; x.fillRect(0, 0, W, H);
+  x.globalAlpha = P(t, 0, 0.6) * (1 - 0.7 * P(t, 21.2, 21.8)); x.drawImage(grid, 0, 0); x.globalAlpha = 1;
+  const st = cont(t), sw = swing(t);
+  if (sw) { const hx = st.cx - st.w / 2 + 34; tagString(t, st); x.save(); x.translate(hx, st.cy); x.rotate(sw); x.translate(-hx, -st.cy); }
+  drawCont(t, st);
+  sTag(t, st);
+  if (sw) { x.restore(); const hx = st.cx - st.w / 2 + 34; dot(hx, st.cy, 17, C.bg, P(t, 7.9, 8.2)); ring(hx, st.cy, 17, C.ink, 5, P(t, 7.9, 8.2)); }
+  sDash(t); sPhone(t, st); sCal(t, st); sShop(t); sCustomer(t, st); sFlight(t); warnIcon(t); hero(t); sDrive(t); flash(t);
+  // hard guarantee: the top third stays empty for overlays
+  x.setTransform(1, 0, 0, 1, 0, 0); x.globalAlpha = 1; x.fillStyle = C.bg; x.fillRect(0, 0, W, 640);
+}
+window.seek = t => { draw(t); return true; };
+window.DURATION = DUR;
+if (!location.search.includes('render')) {
+  const t0 = performance.now();
+  const loop = () => { draw(((performance.now() - t0) / 1000) % DUR); requestAnimationFrame(loop); };
+  requestAnimationFrame(loop);
+} else draw(0);
+</script>
+</body>
+</html>
