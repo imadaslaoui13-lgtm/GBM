@@ -26,7 +26,7 @@ const C = {
 /* ?theme=navy uses the dark blue of the client logo instead of black */
 const NAVY = location.search.includes('theme=navy');
 if (NAVY) Object.assign(C, { bg: '#0b1730', surf: '#122144', surf2: '#1b2e5a', dark: '#13213f' });
-C.hill = NAVY ? '#14254a' : C.hill; C.tyre = NAVY ? '#22355f' : C.tyre;
+C.hill = NAVY ? '#14254a' : '#1a1a1d'; C.tyre = NAVY ? '#22355f' : '#2a2a2e';
 const cl = (v, a = 0, b = 1) => Math.min(b, Math.max(a, v));
 const P = (t, a, b) => cl((t - a) / (b - a));
 const lerp = (a, b, k) => a + (b - a) * k;
