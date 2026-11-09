@@ -438,6 +438,37 @@ function draw(t) {
   sDash(t); sPhone(t, st); sCal(t, st); sShop(t); sCustomer(t, st); sFlight(t); warnIcon(t); hero(t); sDrive(t); flash(t);
   // hard guarantee: the top third stays empty for overlays
   x.setTransform(1, 0, 0, 1, 0, 0); x.globalAlpha = 1; x.fillStyle = C.bg; x.fillRect(0, 0, W, 640);
+  captions(t);
+}
+/* text overlays in the top third (add ?notext to the URL to switch them off) */
+const TEXT = !location.search.includes('notext');
+const FONT = '"Inter Display", "Inter", "Helvetica Neue", Arial, sans-serif';
+const CAPS = [
+  [0.5, 3.25, 'Lampje aan?', 'Geen stress'],
+  [3.9, 7.3, 'Vul je kenteken in', 'Zo starten we je aanvraag'],
+  [8.0, 9.75, 'Prijs vooraf bekend', 'Geen verrassingen achteraf'],
+  [10.4, 12.95, 'Elke dag open', 'Ook in het weekend'],
+  [13.8, 17.35, 'Wij checken je auto', 'Op de brug, van onder tot boven'],
+  [17.55, 19.45, 'Je krijgt een foto', 'Zo zie je wat er speelt'],
+  [19.8, 21.1, 'Jij geeft akkoord', 'Pas dan gaan we aan de slag'],
+  [21.9, 25.1, 'Weer veilig op weg', 'LA Automotive · Almere']
+];
+function captions(t) {
+  if (!TEXT) return;
+  for (const [a, b, head, sub] of CAPS) {
+    if (t < a || t > b) continue;
+    const out = b > DUR ? 0 : P(t, b - 0.25, b), k1 = eo(P(t, a, a + 0.45)), k2 = eo(P(t, a + 0.15, a + 0.6)), k3 = eo(P(t, a + 0.25, a + 0.7));
+    const acc = t >= 21.9 ? C.sun : t >= 19.8 ? C.green : C.orange;
+    x.save(); x.textAlign = 'center'; x.textBaseline = 'alphabetic';
+    let size = 88; x.font = `800 ${size}px ${FONT}`;
+    const w = x.measureText(head).width; if (w > 940) { size = Math.floor(size * 940 / w); x.font = `800 ${size}px ${FONT}`; }
+    x.save(); x.beginPath(); x.rect(0, 380, W, 112); x.clip();           // headline rises out of a mask
+    x.globalAlpha = 1 - out; x.fillStyle = C.ink; x.fillText(head, 540, 470 + 96 * (1 - k1)); x.restore();
+    x.font = `500 44px ${FONT}`; x.globalAlpha = k2 * (1 - out); x.fillStyle = 'rgba(244,244,241,0.72)';
+    x.fillText(sub, 540, 542 + 18 * (1 - k2));
+    x.globalAlpha = 1 - out; if (k3 > 0) fillD(rr(540, 590, 96 * k3, 8, 4), acc);
+    x.restore();
+  }
 }
 window.seek = t => { draw(t); return true; };
 window.DURATION = DUR;
@@ -446,6 +477,7 @@ if (!location.search.includes('render')) {
   const loop = () => { draw(((performance.now() - t0) / 1000) % DUR); requestAnimationFrame(loop); };
   requestAnimationFrame(loop);
 } else draw(0);
+if (document.fonts) Promise.all([document.fonts.load('800 88px "Inter Display"'), document.fonts.load('500 44px "Inter Display"')]).then(() => { window.FONTS_READY = true; }, () => { window.FONTS_READY = true; }); else window.FONTS_READY = true;
 </script>
 </body>
 </html>

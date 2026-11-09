@@ -16,3 +16,10 @@ node tools/render.js frames
 python3 tools/audio.py mix.wav
 ffmpeg -framerate 30 -i frames/%04d.png -i mix.wav -af loudnorm=I=-14:TP=-1.5 -c:v libx264 -crf 17 -pix_fmt yuv420p -c:a aac -b:a 192k -movflags +faststart la-automotive-9x16-fable.mp4
 ```
+
+## Varianten
+
+- `la-automotive-9x16-fable-tekst.mp4` – met tekst bovenin, zonder muziek
+- `la-automotive-9x16-fable-zonder-muziek.mp4` – zonder tekst, zonder muziek
+- Tekst aanpassen: de lijst `CAPS` in `index.html`. Zonder tekst renderen: `NOTEXT=1 node tools/render.js frames`
+- Zonder muziek: `python3 tools/audio.py mix.wav --no-music`

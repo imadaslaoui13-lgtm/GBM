@@ -8,7 +8,8 @@ const path = require('path'), fs = require('fs');
   const N = Math.round(25 * FPS);
   await Promise.all([...Array(WORKERS).keys()].map(async w => {
     const p = await b.newPage({ viewport: { width: 1080, height: 1920 } });
-    await p.goto('file://' + path.resolve(__dirname, '../index.html') + '?render');
+    await p.goto('file://' + path.resolve(__dirname, '../index.html') + '?render' + (process.env.NOTEXT ? '&notext' : ''));
+    await p.waitForFunction(() => window.FONTS_READY);
     const c = p.locator('#c');
     for (let i = w; i < N; i += WORKERS) {
       await p.evaluate(t => window.seek(t), i / FPS);
