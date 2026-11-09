@@ -470,15 +470,6 @@ function logoEnd(t) {
   const k2 = eo(P(t, 22.1, 22.55));
   x.save(); x.textAlign = 'center'; x.font = `500 40px ${FONT}`; x.globalAlpha = k2; x.fillStyle = 'rgba(244,244,241,0.78)';
   x.fillText('Weer veilig op weg \u00b7 Almere', 540, 604 + 14 * (1 - k2)); x.restore();
-  // call-to-action button in the sky above the sun
-  const k3 = eb(P(t, 22.35, 22.75)); if (k3 <= 0) return;
-  const pulse = 1 + 0.025 * Math.sin((t - 22.75) * 5) * P(t, 22.75, 23);
-  at(540, 742, k3 * pulse, () => {
-    fillD(rr(0, 0, 470, 100, 50), C.ink);
-    x.save(); x.textAlign = 'center'; x.textBaseline = 'middle'; x.font = `800 44px ${FONT}`; x.fillStyle = C.bg;
-    x.fillText('Plan je afspraak', -22, 2); x.restore();
-    strokeD('M172 -14L188 2L172 18', 1, C.bg, 7);
-  });
 }
 function captions(t) {
   if (!TEXT) return;

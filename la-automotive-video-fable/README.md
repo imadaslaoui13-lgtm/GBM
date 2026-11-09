@@ -27,4 +27,4 @@ ffmpeg -framerate 30 -i frames/%04d.png -i mix.wav -af loudnorm=I=-14:TP=-1.5 -c
 - 15 seconden renderen: `CUT=15 node tools/render.js frames` en `python3 tools/audio.py mix.wav --cut15`
 - `la-automotive-9x16-fable-15s-blauw.mp4` – dezelfde 15 seconden in het donkerblauw van het logo
 - Donkerblauw renderen: `THEME=navy` voor het rendercommando zetten
-- Het eindbeeld heeft het logo, de slogan en de knop "Plan je afspraak" (tekst staat in `logoEnd` in `index.html`)
+- Het eindbeeld heeft het logo en de slogan (tekst staat in `logoEnd` in `index.html`)
