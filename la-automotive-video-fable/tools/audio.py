@@ -1,5 +1,5 @@
 """Synthesises the soundtrack: upbeat corporate beat (120 BPM) + UI sfx synced to index.html.
-Usage: python3 audio.py out.wav"""
+Usage: python3 audio.py out.wav [--no-music]"""
 import sys, wave
 import numpy as np
 
@@ -189,7 +189,8 @@ E = [
 for t0, sig, pan, g in E:
     add(sfx, t0, sig, pan, g)
 
-mixd = music * 0.9 + sfx * 0.95
+MUSIC = 0.0 if '--no-music' in sys.argv else 0.9  # --no-music: only the UI sounds
+mixd = music * MUSIC + sfx * 0.95
 mixd /= np.max(np.abs(mixd)) * 1.12
 pcm = (np.clip(mixd, -1, 1) * 32767).astype(np.int16)
 with wave.open(sys.argv[1], 'wb') as w:
