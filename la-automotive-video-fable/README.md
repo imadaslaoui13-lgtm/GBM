@@ -23,3 +23,5 @@ ffmpeg -framerate 30 -i frames/%04d.png -i mix.wav -af loudnorm=I=-14:TP=-1.5 -c
 - `la-automotive-9x16-fable-zonder-muziek.mp4` – zonder tekst, zonder muziek
 - Tekst aanpassen: de lijst `CAPS` in `index.html`. Zonder tekst renderen: `NOTEXT=1 node tools/render.js frames`
 - Zonder muziek: `python3 tools/audio.py mix.wav --no-music`
+- `la-automotive-9x16-fable-15s.mp4` – korte advertentieversie van 15 seconden, met koppen, zonder muziek
+- 15 seconden renderen: `CUT=15 node tools/render.js frames` en `python3 tools/audio.py mix.wav --cut15`

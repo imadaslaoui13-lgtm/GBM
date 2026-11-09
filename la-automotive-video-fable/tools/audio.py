@@ -3,7 +3,9 @@ Usage: python3 audio.py out.wav [--no-music]"""
 import sys, wave
 import numpy as np
 
-SR, DUR = 48000, 25.0
+CUT = '--cut15' in sys.argv  # 15 s ad cut: same time map as index.html, sounds only
+WARP = [(0, 0), (1.8, 3.3), (4.5, 7.4), (6.2, 9.8), (7.9, 13.0), (11.0, 18.7), (12.3, 20.9), (15, 25)]
+SR, DUR = 48000, (15.0 if CUT else 25.0)
 N = int(SR * DUR)
 rng = np.random.default_rng(7)
 music = np.zeros((N, 2))
@@ -15,7 +17,16 @@ def tt(d):
     return np.arange(int(SR * d)) / SR
 
 
+def unwarp(t):
+    for (u0, t0), (u1, t1) in zip(WARP, WARP[1:]):
+        if t <= t1:
+            return u0 + (u1 - u0) * (t - t0) / (t1 - t0)
+    return 15.0
+
+
 def add(buf, t0, sig, pan=0.0, gain=1.0):
+    if CUT:
+        t0 = unwarp(t0)
     i = int(t0 * SR)
     if i >= N:
         return
@@ -107,7 +118,7 @@ for b in range(bars):
             add(music, t0 + i * 0.25, bass(ROOT[c] + m, 0.22))
 # final ring-out chord
 add(music, 24.0, pad([72, 76, 79], 1.0), gain=2.0)
-fade = np.ones(N); fs = int(23.6 * SR); fade[fs:] = np.linspace(1, 0, N - fs) ** 1.5
+fade = np.ones(N); fs = min(int(23.6 * SR), N - 1); fade[fs:] = np.linspace(1, 0, N - fs) ** 1.5
 music *= fade[:, None]
 
 
@@ -189,7 +200,7 @@ E = [
 for t0, sig, pan, g in E:
     add(sfx, t0, sig, pan, g)
 
-MUSIC = 0.0 if '--no-music' in sys.argv else 0.9  # --no-music: only the UI sounds
+MUSIC = 0.0 if ('--no-music' in sys.argv or CUT) else 0.9  # --no-music: only the UI sounds
 mixd = music * MUSIC + sfx * 0.95
 mixd /= np.max(np.abs(mixd)) * 1.12
 pcm = (np.clip(mixd, -1, 1) * 32767).astype(np.int16)

@@ -5,10 +5,10 @@ const path = require('path'), fs = require('fs');
   const out = process.argv[2], FPS = 30, WORKERS = 4;
   fs.mkdirSync(out, { recursive: true });
   const b = await chromium.launch();
-  const N = Math.round(25 * FPS);
+  const N = Math.round((+process.env.CUT || 25) * FPS);
   await Promise.all([...Array(WORKERS).keys()].map(async w => {
     const p = await b.newPage({ viewport: { width: 1080, height: 1920 } });
-    await p.goto('file://' + path.resolve(__dirname, '../index.html') + '?render' + (process.env.NOTEXT ? '&notext' : ''));
+    await p.goto('file://' + path.resolve(__dirname, '../index.html') + '?render' + (process.env.NOTEXT ? '&notext' : '') + (process.env.CUT ? '&cut=' + process.env.CUT : ''));
     await p.waitForFunction(() => window.FONTS_READY);
     const c = p.locator('#c');
     for (let i = w; i < N; i += WORKERS) {
