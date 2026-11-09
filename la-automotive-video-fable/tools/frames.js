@@ -6,7 +6,7 @@ const path = require('path');
   const b = await chromium.launch();
   const p = await b.newPage({ viewport: { width: 1080, height: 1920 } });
   const errs = []; p.on('pageerror', e => errs.push(e.message)); p.on('console', m => m.type() === 'error' && errs.push(m.text()));
-  await p.goto('file://' + path.resolve(__dirname, '../index.html') + '?render' + (process.env.NOTEXT ? '&notext' : ''));
+  await p.goto('file://' + path.resolve(__dirname, '../index.html') + '?render' + (process.env.NOTEXT ? '&notext' : '') + (process.env.THEME ? '&theme=' + process.env.THEME : ''));
   await p.waitForFunction(() => window.FONTS_READY);
   for (const t of ts) {
     await p.evaluate(t => window.seek(t), +t);
