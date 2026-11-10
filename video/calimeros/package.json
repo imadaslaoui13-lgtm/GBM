@@ -1,0 +1,16 @@
+{
+  "name": "calimeros-commercial",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "hypit": {
+    "project": true
+  },
+  "dependencies": {
+    "@hypit/hypit": "file:/opt/node22/lib/node_modules/@hypit/hypit",
+    "@hypit/fontsource": "file:/opt/node22/lib/node_modules/@hypit/hypit/node_modules/@hypit/fontsource",
+    "@fontsource-variable/inter": "^5.2.5",
+    "@fontsource/luckiest-guy": "^5.2.5",
+    "@calimeros/spot": "file:./packages/spot"
+  }
+}

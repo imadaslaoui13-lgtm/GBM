@@ -1,0 +1,53 @@
+<?svml using="@hypit/markup@1"?>
+<svml>
+  <import as="time" from="@hypit/timeline-author@1"/>
+  <import as="spatial" from="@hypit/spatial@1"/>
+  <import as="media" from="@hypit/media@1"/>
+  <import as="asset" from="@hypit/media@1"/>
+  <import as="mediaop" from="@hypit/media-operations@1"/>
+  <import as="audio" from="@hypit/audio-track@1"/>
+  <import as="fonts" from="@hypit/fontsource@1"/>
+  <import as="ad" from="@calimeros/spot@1"/>
+  <import as="film" from="@hypit/film@1"/>
+  <import as="html" from="@hypit/html-video@1"/>
+  <import as="style" source="./calimeros.svs"/>
+
+  <!-- 16 s at 120 BPM: every scene lands on the beat -->
+  <time:Clock id="clock" frame-rate="30"/>
+  <time:Timeline id="spot-time" clock={clock} end="16s">
+    <time:Instant id="hook" at="0s"/>
+    <time:Instant id="crunch" at="2s"/>
+    <time:Instant id="juicy" at="4s"/>
+    <time:Instant id="menu" at="6s"/>
+    <time:Instant id="share" at="10s"/>
+    <time:Instant id="outro" at="12s"/>
+  </time:Timeline>
+
+  <spatial:Canvas id="canvas" width="1080" height="1920"/>
+  <fonts:Face id="head-face" package="@fontsource/luckiest-guy" weight="400" style="normal"/>
+  <fonts:Face id="body-face" package="@fontsource-variable/inter" weight="800" style="normal"/>
+  <media:FontStack id="head" primary={head-face}/>
+  <media:FontStack id="body" primary={body-face}/>
+
+  <ad:Spot id="spot" timeline={spot-time.timeline} within={canvas.bounds} font={body} headline={head}
+    during={spot-time.window} cta="KOM PROEVEN">
+    <ad:Beat id="b-hook" kind="hook" text="KRAK!" sub="1 hap en je bent verkocht." at={spot-time.hook}/>
+    <ad:Beat id="b-crunch" kind="crunch" text="KROKANT" sub="van buiten" at={spot-time.crunch}/>
+    <ad:Beat id="b-juicy" kind="juicy" text="SAPPIG" sub="van binnen" at={spot-time.juicy}/>
+    <ad:Beat id="b-menu" kind="menu" text="KIES JE FAVORIET" sub="Bucket | Wings | Burger | Friet" at={spot-time.menu}/>
+    <ad:Beat id="b-share" kind="share" text="SAMEN" sub="smaakt 't beter" at={spot-time.share}/>
+    <ad:Beat id="b-end" kind="end" text="Krak. Smak. Calimero's." sub="Bestel nu of kom langs" at={spot-time.outro}/>
+  </ad:Spot>
+
+  <asset:Audio id="music" src="./assets/muziek.wav"/>
+  <mediaop:Normalize id="music-media" source={music} clock={clock} video="none" audio="default" span-authority="audio"/>
+  <audio:Track id="mix" timeline={spot-time.timeline}>
+    <audio:Clip id="music-bed" source={music-media.media} during={spot-time.window} gain="0.9" fade-out="12f"/>
+  </audio:Track>
+
+  <film:Film id="main" canvas={canvas.canvas} timeline={spot-time.timeline} appearance={style.film.main}>
+    <film:Track source={spot.visual}/>
+    <film:Track source={mix.audio}/>
+  </film:Film>
+  <html:Video id="final" composition={main.composition} timeline={spot-time.timeline}/>
+</svml>
