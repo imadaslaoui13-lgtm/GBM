@@ -1,0 +1,57 @@
+<?svml using="@hypit/markup@1"?>
+<svml>
+  <import as="time" from="@hypit/timeline-author@1"/>
+  <import as="spatial" from="@hypit/spatial@1"/>
+  <import as="media" from="@hypit/media@1"/>
+  <import as="asset" from="@hypit/media@1"/>
+  <import as="mediaop" from="@hypit/media-operations@1"/>
+  <import as="audio" from="@hypit/audio-track@1"/>
+  <import as="fonts" from="@hypit/fontsource@1"/>
+  <import as="rv" from="@calimeros/reveal@1"/>
+  <import as="film" from="@hypit/film@1"/>
+  <import as="html" from="@hypit/html-video@1"/>
+  <import as="style" source="./calimeros-ei.svs"/>
+
+  <!-- Tension builds over three wobble/crack pairs, then the egg opens on 4 s -->
+  <time:Clock id="clock" frame-rate="30"/>
+  <time:Timeline id="reel" clock={clock} end="9s">
+    <time:Instant id="wobble-1" at="0.4s"/>
+    <time:Instant id="crack-1" at="1s"/>
+    <time:Instant id="wobble-2" at="1.8s"/>
+    <time:Instant id="crack-2" at="2.2s"/>
+    <time:Instant id="wobble-3" at="3s"/>
+    <time:Instant id="crack-3" at="3.3s"/>
+    <time:Instant id="opening" at="4s"/>
+    <time:Instant id="tag" at="5.4s"/>
+  </time:Timeline>
+
+  <spatial:Canvas id="canvas" width="1080" height="1920"/>
+  <fonts:Face id="bold-face" package="@fontsource-variable/inter" weight="800" style="normal"/>
+  <fonts:Face id="body-face" package="@fontsource-variable/inter" weight="700" style="normal"/>
+  <media:FontStack id="bold" primary={bold-face}/>
+  <media:FontStack id="body" primary={body-face}/>
+
+  <rv:Reveal id="egg" timeline={reel.timeline} within={canvas.bounds} font={body} headline={bold}
+    during={reel.window} cta="Kom proeven">
+    <rv:Beat id="w1" kind="wobble" text="-" at={reel.wobble-1}/>
+    <rv:Beat id="c1" kind="crack" text="-" at={reel.crack-1}/>
+    <rv:Beat id="w2" kind="wobble" text="-" at={reel.wobble-2}/>
+    <rv:Beat id="c2" kind="crack" text="-" at={reel.crack-2}/>
+    <rv:Beat id="w3" kind="wobble" text="-" at={reel.wobble-3}/>
+    <rv:Beat id="c3" kind="crack" text="-" at={reel.crack-3}/>
+    <rv:Beat id="open" kind="open" text="-" at={reel.opening}/>
+    <rv:Beat id="tagline" kind="tagline" text="Vers · Krokant · Eerlijk" at={reel.tag}/>
+  </rv:Reveal>
+
+  <asset:Audio id="sound" src="./assets/ei-geluid.wav"/>
+  <mediaop:Normalize id="sound-media" source={sound} clock={clock} video="none" audio="default" span-authority="audio"/>
+  <audio:Track id="mix" timeline={reel.timeline}>
+    <audio:Clip id="sound-bed" source={sound-media.media} during={reel.window}/>
+  </audio:Track>
+
+  <film:Film id="main" canvas={canvas.canvas} timeline={reel.timeline} appearance={style.film.main}>
+    <film:Track source={egg.visual}/>
+    <film:Track source={mix.audio}/>
+  </film:Film>
+  <html:Video id="final" composition={main.composition} timeline={reel.timeline}/>
+</svml>

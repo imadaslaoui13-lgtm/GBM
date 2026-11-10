@@ -27,3 +27,21 @@ npm install
 hypit build calimeros.svrun --runtime hypit.runtime.json --follow
 hypit get <build-id> --output final.video --to calimeros-reclame.mp4
 ```
+
+---
+
+# Reel 2 – Ei breekt open (9 s, minimalistisch)
+
+Eindbestand: `calimeros-ei-reel.mp4` (1080x1920, 30 fps, met sounddesign).
+
+| Tijd | Wat gebeurt er |
+|---|---|
+| 0–4 s | Heel ei op rustige crème achtergrond. Wiebelt 3x, barst steeds verder (tik + krak) |
+| 4 s | Ei breekt open: bovenkant vliegt weg, schilfers, warm licht |
+| 4–5 s | Logo komt uit het ei omhoog |
+| 5,4 s | VERS · KROKANT · EERLIJK, rode lijn, KOM PROEVEN |
+
+- Teksten en timing: `calimeros-ei.svml`
+- Animatie: `packages/reveal/src/render.ts`
+- Geluid: `assets/ei-geluid-generator.py` → `assets/ei-geluid.wav`
+- Renderen: `hypit build calimeros-ei.svrun --runtime hypit.runtime.json --follow`

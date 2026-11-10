@@ -11,6 +11,7 @@
     "@hypit/fontsource": "file:/opt/node22/lib/node_modules/@hypit/hypit/node_modules/@hypit/fontsource",
     "@fontsource-variable/inter": "^5.2.5",
     "@fontsource/luckiest-guy": "^5.2.5",
-    "@calimeros/spot": "file:./packages/spot"
+    "@calimeros/spot": "file:./packages/spot",
+    "@calimeros/reveal": "file:./packages/reveal"
   }
 }
