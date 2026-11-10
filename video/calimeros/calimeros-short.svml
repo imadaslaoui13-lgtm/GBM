@@ -1,0 +1,60 @@
+<?svml using="@hypit/markup@1"?>
+<svml>
+  <import as="time" from="@hypit/timeline-author@1"/>
+  <import as="spatial" from="@hypit/spatial@1"/>
+  <import as="media" from="@hypit/media@1"/>
+  <import as="asset" from="@hypit/media@1"/>
+  <import as="mediaop" from="@hypit/media-operations@1"/>
+  <import as="audio" from="@hypit/audio-track@1"/>
+  <import as="fonts" from="@hypit/fontsource@1"/>
+  <import as="sh" from="@calimeros/short@1"/>
+  <import as="film" from="@hypit/film@1"/>
+  <import as="html" from="@hypit/html-video@1"/>
+  <import as="style" source="./calimeros-short.svs"/>
+
+  <!-- "De barst": the crack opens the short, carries three words and becomes the logo's shell edge -->
+  <time:Clock id="clock" frame-rate="30"/>
+  <time:Timeline id="short" clock={clock} end="10s">
+    <time:Instant id="crack" at="0.3s"/>
+    <time:Instant id="split" at="0.9s"/>
+    <time:Instant id="word-1" at="0.9s"/>
+    <time:Instant id="word-2" at="2.2s"/>
+    <time:Instant id="word-3" at="3.5s"/>
+    <time:Instant id="build" at="4.8s"/>
+    <time:Instant id="logo" at="6.3s"/>
+    <time:Instant id="cta" at="7.5s"/>
+  </time:Timeline>
+
+  <!-- rendered above delivery size, downscaled afterwards for crisp edges -->
+  <spatial:Canvas id="canvas" width="1440" height="2560"/>
+  <fonts:Face id="word-face" package="@fontsource-variable/inter" weight="900" style="normal"/>
+  <fonts:Face id="mark-face" package="@fontsource/luckiest-guy" weight="400" style="normal"/>
+  <fonts:Face id="sub-face" package="@fontsource/lilita-one" weight="400" style="normal"/>
+  <media:FontStack id="words" primary={word-face}/>
+  <media:FontStack id="mark" primary={mark-face}/>
+  <media:FontStack id="sub" primary={sub-face}/>
+
+  <sh:Short id="spot" timeline={short.timeline} within={canvas.bounds} font={words} headline={mark} brand={sub}
+    during={short.window} cta="Kom proeven">
+    <sh:Beat id="b-crack" kind="crack" text="-" at={short.crack}/>
+    <sh:Beat id="b-split" kind="split" text="-" at={short.split}/>
+    <sh:Beat id="b-w1" kind="word" text="Krokant" at={short.word-1}/>
+    <sh:Beat id="b-w2" kind="word" text="Sappig" at={short.word-2}/>
+    <sh:Beat id="b-w3" kind="word" text="Eerlijk" at={short.word-3}/>
+    <sh:Beat id="b-build" kind="build" text="-" at={short.build}/>
+    <sh:Beat id="b-logo" kind="logo" text="CALIMERO'S" sub="CHICKEN" at={short.logo}/>
+    <sh:Beat id="b-cta" kind="cta" text="-" at={short.cta}/>
+  </sh:Short>
+
+  <asset:Audio id="sound" src="./assets/short-geluid.wav"/>
+  <mediaop:Normalize id="sound-media" source={sound} clock={clock} video="none" audio="default" span-authority="audio"/>
+  <audio:Track id="mix" timeline={short.timeline}>
+    <audio:Clip id="sound-bed" source={sound-media.media} during={short.window}/>
+  </audio:Track>
+
+  <film:Film id="main" canvas={canvas.canvas} timeline={short.timeline} appearance={style.film.main}>
+    <film:Track source={spot.visual}/>
+    <film:Track source={mix.audio}/>
+  </film:Film>
+  <html:Video id="final" composition={main.composition} timeline={short.timeline}/>
+</svml>
