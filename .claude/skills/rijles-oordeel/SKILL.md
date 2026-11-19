@@ -17,6 +17,7 @@ ffprobe -v error -show_entries format=duration:stream=codec_type,width,height -o
 ffmpeg -v error -i "<video>" -vf "fps=1,scale=240:-1,tile=8x6" -frames:v 1 sheet.png
 ```
 Bekijk de sheet. Noteer per seconde: wat gebeurt er (fietser, voetganger, kruising, voorrang) en wanneer de leerling een beslissing neemt.
+- **Vraag altijd eerst om het ruwe origineel.** Dat geeft meer beeld en geen oude tekst om weg te werken.
 - **Ruwe video** (geen tekst in beeld): `crop` = het hele beeld of een 3:4-uitsnede rond de voorruit.
 - **Video met oude tekst erin**: meet de camerazone (rij per rij de achtergrondkleur) en zet `layout.card` precies over het oude tekstblok. Check dat met `--preview`.
 
