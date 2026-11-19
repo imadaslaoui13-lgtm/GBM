@@ -1,0 +1,173 @@
+{
+  "source": {
+    "file": "source.mp4",
+    "crop": [
+      72,
+      0,
+      432,
+      768
+    ]
+  },
+  "duration": 22.0,
+  "brand": {
+    "primary": "#2410C4",
+    "light": "#71CEFA",
+    "logo": "../brand/bvo-logo.png"
+  },
+  "layout": {
+    "safe_cx": 470
+  },
+  "intro": {
+    "end": 2.4,
+    "hook": [
+      "POV: je instructeur",
+      "komt je ophalen"
+    ],
+    "title": "GOOI CITY",
+    "sub": "EEN MISSIE VAN BVO"
+  },
+  "mission": {
+    "start": 2.4,
+    "end": 5.0,
+    "title": "MISSIE 2",
+    "sub": "LEERLING OPHALEN"
+  },
+  "hud": {
+    "start": 2.4,
+    "end": 17.4
+  },
+  "help": [
+    {
+      "start": 5.6,
+      "end": 9.0,
+      "lines": [
+        "Tip: regen = langere remweg.",
+        "Houd extra afstand."
+      ]
+    }
+  ],
+  "objectives": [
+    {
+      "start": 5.2,
+      "end": 9.0,
+      "parts": [
+        [
+          "Rijd naar de ",
+          "w"
+        ],
+        [
+          "leerling",
+          "b"
+        ],
+        [
+          ".",
+          "w"
+        ]
+      ]
+    },
+    {
+      "start": 9.6,
+      "end": 13.6,
+      "parts": [
+        [
+          "Blijf rustig in de ",
+          "w"
+        ],
+        [
+          "regen",
+          "y"
+        ],
+        [
+          ".",
+          "w"
+        ]
+      ]
+    }
+  ],
+  "points": [
+    {
+      "at": 9.0,
+      "value": 50,
+      "label": "Afstand gehouden"
+    },
+    {
+      "at": 12.6,
+      "value": 50,
+      "label": "Veilig door de regen"
+    },
+    {
+      "at": 14.4,
+      "value": 250,
+      "label": "Missiebonus"
+    }
+  ],
+  "passed": {
+    "at": 14.0,
+    "end": 17.6,
+    "title": "MISSIE GESLAAGD",
+    "sub": "LEERLING OPGEHAALD"
+  },
+  "outro": {
+    "at": 17.6,
+    "kicker": "NIEUWE MISSIE BESCHIKBAAR",
+    "title": "JOUW RIJBEWIJS",
+    "sub": "START BIJ BVO",
+    "items": [
+      [
+        "like",
+        "Like"
+      ],
+      [
+        "comment",
+        "Reageer"
+      ],
+      [
+        "share",
+        "Deel"
+      ]
+    ]
+  },
+  "audio": {
+    "music": "../rijles-gta-01/music-neon.mp3",
+    "music_offset": 8,
+    "music_gain": 0.9,
+    "source_gain": 0.35,
+    "sfx": [
+      {
+        "at": 0.0,
+        "file": "zhhh",
+        "db": -8
+      },
+      {
+        "at": 2.35,
+        "file": "impact-boom",
+        "db": -9
+      },
+      {
+        "at": 9.0,
+        "file": "pop-back",
+        "db": -8
+      },
+      {
+        "at": 12.6,
+        "file": "pop-back",
+        "db": -8
+      },
+      {
+        "at": 11.4,
+        "file": "riser",
+        "db": -10
+      },
+      {
+        "at": 14.0,
+        "file": "impact-boom",
+        "db": -4
+      },
+      {
+        "at": 17.5,
+        "file": "zhhh",
+        "db": -8
+      }
+    ]
+  }
+}

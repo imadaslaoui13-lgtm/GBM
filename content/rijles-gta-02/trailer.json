@@ -1,0 +1,167 @@
+{
+  "source": {
+    "file": "source.mp4",
+    "crop": [
+      0,
+      24,
+      576,
+      720
+    ]
+  },
+  "duration": 21.5,
+  "brand": {
+    "primary": "#2410C4",
+    "light": "#71CEFA",
+    "logo": "../brand/bvo-logo.png"
+  },
+  "safe_cx": 470,
+  "presents": {
+    "end": 1.4,
+    "text": "BVO Verkeersschool presenteert"
+  },
+  "shots": [
+    [
+      0.0,
+      2.0
+    ],
+    [
+      4.5,
+      6.3
+    ],
+    [
+      9.0,
+      11.2
+    ],
+    [
+      12.0,
+      14.2
+    ],
+    [
+      15.0,
+      17.2
+    ],
+    [
+      17.2,
+      19.2
+    ],
+    [
+      19.6,
+      21.9
+    ]
+  ],
+  "subs": [
+    {
+      "start": 1.5,
+      "end": 3.3,
+      "text": "Regen. Spits. Rood licht."
+    },
+    {
+      "start": 3.5,
+      "end": 5.1,
+      "text": "Maar de missie blijft hetzelfde."
+    },
+    {
+      "start": 7.5,
+      "end": 9.5,
+      "text": "Ergens in 't Gooi..."
+    },
+    {
+      "start": 9.7,
+      "end": 11.7,
+      "text": "...wacht een leerling."
+    },
+    {
+      "start": 13.9,
+      "end": 16.0,
+      "text": "Ben jij de volgende?"
+    }
+  ],
+  "cards": [
+    {
+      "start": 5.3,
+      "end": 7.3,
+      "title": "DE INSTRUCTEUR",
+      "sub": "BVO Verkeersschool"
+    },
+    {
+      "start": 11.9,
+      "end": 13.7,
+      "title": "DE MISSIE",
+      "sub": "Leerling ophalen"
+    }
+  ],
+  "flashes": [
+    3.4,
+    7.4,
+    11.8,
+    16.1
+  ],
+  "end": {
+    "at": 16.1,
+    "title": "JOUW RIJBEWIJS",
+    "sub": "BINNENKORT BIJ BVO",
+    "panel_times": [
+      1.0,
+      5.4,
+      10.0,
+      16.0
+    ],
+    "items": [
+      [
+        "like",
+        "Like"
+      ],
+      [
+        "comment",
+        "Reageer"
+      ],
+      [
+        "share",
+        "Deel"
+      ]
+    ]
+  },
+  "audio": {
+    "music": "../rijles-gta-01/music-neon.mp3",
+    "music_offset": 0,
+    "music_gain": 1.0,
+    "sfx": [
+      {
+        "at": 1.4,
+        "file": "impact-boom",
+        "db": -8
+      },
+      {
+        "at": 3.4,
+        "file": "zhhh",
+        "db": -14
+      },
+      {
+        "at": 7.4,
+        "file": "zhhh",
+        "db": -14
+      },
+      {
+        "at": 11.8,
+        "file": "zhhh",
+        "db": -14
+      },
+      {
+        "at": 13.5,
+        "file": "riser",
+        "db": -9
+      },
+      {
+        "at": 16.1,
+        "file": "impact-boom",
+        "db": -4
+      }
+    ]
+  },
+  "hud": {
+    "start": 1.5,
+    "end": 15.9,
+    "dist_m": 1800,
+    "target": "Leerling"
+  }
+}
