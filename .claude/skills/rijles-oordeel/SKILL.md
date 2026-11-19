@@ -1,6 +1,6 @@
 ---
 name: rijles-oordeel
-description: Maakt van een ruwe rijlesvideo (dashcam of telefoon in de lesauto) een virale verticale short in het vaste format "Handelde de leerling goed?" - hook met A/B-keuze in de eerste 2,5 s, gesegmenteerde voortgangsbalk, geanimeerde scènekaarten per moment, oordeelstempel van de instructeur, een eindscherm met Like / Reageer / Deel, kleurcorrectie, geluidstikken en -14 LUFS. Plus posttekst met 3 hooks. Gebruik bij rijles, lesauto, leerling, examensituatie, verkeerssituatie, rijschoolvideo, "maak hier een viral van", of als iemand een rijlesvideo aanlevert.
+description: Maakt van een ruwe rijlesvideo (dashcam of telefoon in de lesauto) een virale verticale short in het vaste format "Handelde de leerling goed?" - hook met A/B-keuze in de eerste 2,5 s, gesegmenteerde voortgangsbalk, geanimeerde scènekaarten per moment, oordeelstempel van de instructeur, een eindscherm met Like / Reageer / Deel, kleurcorrectie, dreun bij het oordeel en -14 LUFS. Plus posttekst met 3 hooks. Gebruik bij rijles, lesauto, leerling, examensituatie, verkeerssituatie, rijschoolvideo, "maak hier een viral van", of als iemand een rijlesvideo aanlevert.
 argument-hint: "<video> [situatienummer] [handle]"
 ---
 
@@ -35,6 +35,7 @@ Kopieer `examples/fietser-bestelbus.json` naar `<project>/spec.json` en vul in:
 - `poll`: standaard uit. Alleen gebruiken als er géén oordeel in de video zit (dan is de poll het einde).
 - `header`: alleen `title` plus de compacte maten uit het voorbeeld. `header.right` (label rechtsboven) en `layout.progress` (voortgangsbalk) staan bewust uit.
 - `brand`: `primary`, `light` en `logo` van de rijschool (standaard BVO, zie format.md).
+- `layout.counter: false` (geen 1/5-teller) en `audio.ticks: false` (geen tik bij tekstwissel) staan standaard uit; alleen de dreun bij de stempel blijft.
 - `layout.card_band: true` (standaard): de scènekaart vult de balk onder de video. Zonder band-modus zweeft de kaart over het beeld (`layout.card` = positie); dan kan `footer` een slogan tonen.
 
 ## 4. Preview, dan render

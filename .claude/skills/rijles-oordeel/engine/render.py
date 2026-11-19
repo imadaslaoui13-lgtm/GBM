@@ -190,7 +190,8 @@ class Renderer:
         cd = ImageDraw.Draw(c)
         cd.rounded_rectangle((x0 + 30, y0 + 30, x0 + 38, y0 + 156), 4, fill=self.acc)
         cd.text((x0 + 62, y0 + 36 + dy), sc["label"].upper(), font=font("ExtraBold", 26), fill=self.acc)
-        cd.text((x1 - 34, y0 + 36), f"{i + 1}/{len(self.scenes)}", font=font("SemiBold", 24), fill=self.card_sub, anchor="ra")
+        if self.s["layout"].get("counter", True):
+            cd.text((x1 - 34, y0 + 36), f"{i + 1}/{len(self.scenes)}", font=font("SemiBold", 24), fill=self.card_sub, anchor="ra")
         cd.text((x0 + 60, y0 + 70 + dy), sc["title"], font=font("ExtraBold", 50), fill=self.white)
         cd.text((x0 + 62, y0 + 132 + dy), sc["sub"], font=font("Medium", 29), fill=self.card_sub)
         if alpha < 255:
@@ -276,10 +277,13 @@ class Renderer:
     def _icon(self, d, kind, cx, cy, r, col):
         """Eenvoudige vectoriconen: hart, tekstballon, deelpijl."""
         if kind == "like":
-            rr = r * 0.42
-            d.ellipse((cx - 2 * rr, cy - rr * 1.5, cx, cy + rr * 0.5), fill=col)
-            d.ellipse((cx, cy - rr * 1.5, cx + 2 * rr, cy + rr * 0.5), fill=col)
-            d.polygon([(cx - 1.93 * rr, cy - 0.3 * rr), (cx + 1.93 * rr, cy - 0.3 * rr), (cx, cy + 1.75 * rr)], fill=col)
+            pts = []
+            for k in range(120):
+                u = 2 * math.pi * k / 120
+                x = 16 * math.sin(u) ** 3
+                y = -(13 * math.cos(u) - 5 * math.cos(2 * u) - 2 * math.cos(3 * u) - math.cos(4 * u))
+                pts.append((cx + x * r / 17, cy + (y + 2) * r / 17))
+            d.polygon(pts, fill=col)
         elif kind == "comment":
             w, h = r * 1.5, r * 1.05
             d.rounded_rectangle((cx - w / 2, cy - h / 2 - r * 0.12, cx + w / 2, cy + h / 2 - r * 0.12), int(r * 0.3), fill=col)
@@ -319,8 +323,17 @@ class Renderer:
             beat = (t - c["at"] - 1.2) % (0.6 * n)
             pop = 1 + (0.08 * math.sin(math.pi * beat / 0.6) if j * 0.6 <= beat < (j + 1) * 0.6 and t - c["at"] > 1.2 else 0)
             r = int(92 * kk * pop)
-            d.ellipse((cx - r, y - r, cx + r, y + r), fill=self.light[:3] + (a,), outline=(255, 255, 255, a), width=5)
-            self._icon(d, kind, cx, y + (r * 0.05 if kind == "like" else 0), r * 0.62, self.primary[:3] + (a,))
+            # 4x supersampling voor gladde randen
+            SS, R = 4, max(r, 1)
+            big = Image.new("RGBA", (2 * R * SS + 8, 2 * R * SS + 8), (0, 0, 0, 0))
+            bd = ImageDraw.Draw(big)
+            bc = R * SS + 4
+            bd.ellipse((4, 4, 4 + 2 * R * SS, 4 + 2 * R * SS), fill=self.light[:3] + (255,), outline=(255, 255, 255, 255), width=5 * SS)
+            self._icon(bd, kind, bc, bc, R * SS * (0.58 if kind == "like" else 0.62), self.primary[:3] + (255,))
+            small = big.resize((big.width // SS, big.height // SS), Image.LANCZOS)
+            if a < 255:
+                small.putalpha(small.getchannel("A").point(lambda v: v * a // 255))
+            ov.alpha_composite(small, (cx - small.width // 2, y - small.height // 2))
             la = int(255 * max(0.0, min(1.0, (t - c["at"] - 0.55 - j * 0.22) / 0.25)))
             d.text((cx, y + 135), label, font=font("ExtraBold", 44), fill=(255, 255, 255, la), anchor="mm")
         im.alpha_composite(ov)
@@ -339,7 +352,7 @@ class Renderer:
 
 def build_audio(spec, src, out_wav):
     """Origineel geluid + tik per scènewissel + dreun bij het oordeel, genormaliseerd naar -14 LUFS."""
-    ticks = [sc["start"] for sc in spec["scenes"][1:]]
+    ticks = [sc["start"] for sc in spec["scenes"][1:]] if spec.get("audio", {}).get("ticks", True) else []
     parts, inputs = [], ["-i", src]
     tick = "aevalsrc='0.35*sin(2*PI*1800*t)*exp(-60*t)':d=0.12:s=44100"
     thud = "aevalsrc='0.9*sin(2*PI*(70+90*exp(-25*t))*t)*exp(-9*t)':d=0.5:s=44100"

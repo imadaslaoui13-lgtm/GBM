@@ -24,7 +24,8 @@
       1920
     ],
     "card_band": true,
-    "progress": false
+    "progress": false,
+    "counter": false
   },
   "header": {
     "title": "Handelde de leerling goed?",
@@ -101,5 +102,8 @@
         "Deel"
       ]
     ]
+  },
+  "audio": {
+    "ticks": false
   }
 }
