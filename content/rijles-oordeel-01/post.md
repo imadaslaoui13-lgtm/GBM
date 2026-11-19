@@ -21,4 +21,4 @@ A of B? Ik reageer op iedereen die zijn keuze uitlegt 👀
 ## Posten
 - Beste tijd: doordeweeks tussen 17:00 en 20:00.
 - Cover: frame op 1,2 s (hook met A/B in beeld).
-- Vervang `@jouwrijschool` in de spec door je eigen handle en render opnieuw.
+- Huisstijl BVO: logo in de header, slogan "De Beste Voor Onderweg" in de footer.

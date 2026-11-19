@@ -61,16 +61,34 @@ def rounded(draw, box, r, fill, outline=None, width=0):
 
 
 class Renderer:
-    def __init__(self, spec):
+    """Alle kleuren komen uit spec.brand, zodat elke rijschool zijn eigen huisstijl krijgt."""
+
+    def __init__(self, spec, base="."):
         self.s = spec
         b = spec["brand"]
-        self.bg = hexc(b.get("bg", "#0E141B"))
-        self.card = hexc(b.get("card", "#121B24"))
-        self.acc = hexc(b.get("accent", "#C6F432"))
-        self.txt = hexc("#FFFFFF")
-        self.mut = hexc(b.get("muted", "#9AA7B4"))
-        self.good = hexc(b.get("good", "#2BD576"))
-        self.bad = hexc(b.get("bad", "#FF5A5F"))
+        g = lambda k, d: hexc(b.get(k, d))
+        self.primary = g("primary", "#2410C4")
+        self.light = g("light", "#71CEFA")
+        self.white = hexc("#FFFFFF")
+        self.head_bg = g("header_bg", "#FFFFFF")
+        self.head_txt = g("header_text", b.get("primary", "#2410C4"))
+        self.head_mut = g("header_muted", "#6B66A8")
+        self.track = g("track", "#E4E2F6")
+        self.fill = g("fill", b.get("primary", "#2410C4"))
+        self.foot_bg = g("footer_bg", b.get("primary", "#2410C4"))
+        self.card = g("card", b.get("primary", "#2410C4"))
+        self.card_sub = g("card_sub", "#D4DAFF")
+        self.acc = g("accent", b.get("light", "#71CEFA"))
+        self.ov = g("overlay", "#0B0640")
+        self.opt_a = g("option_a", b.get("light", "#71CEFA"))
+        self.opt_b = g("option_b", "#FFFFFF")
+        self.stamp_bg = g("stamp_bg", b.get("light", "#71CEFA"))
+        self.stamp_txt = g("stamp_text", b.get("primary", "#2410C4"))
+        self.bg = self.head_bg
+        self.logo = None
+        if b.get("logo"):
+            lp = b["logo"] if os.path.isabs(b["logo"]) else os.path.join(base, b["logo"])
+            self.logo = Image.open(lp).convert("RGBA")
         L = spec["layout"]
         self.vy, self.vh = L["video_y"], L["video_h"]
         self.cardbox = tuple(L["card"])
@@ -82,24 +100,39 @@ class Renderer:
     def _static(self):
         s, im = self.s, Image.new("RGBA", (W, H), (0, 0, 0, 0))
         d = ImageDraw.Draw(im)
-        d.rectangle((0, 0, W, self.vy), fill=self.bg)
-        d.rectangle((0, self.vy + self.vh, W, H), fill=self.bg)
-        # pill + situatienummer
-        f = font("ExtraBold", 26)
-        tag = s["header"]["tag"].upper()
-        tw = d.textlength(tag, font=f)
-        rounded(d, (48, 40, 48 + tw + 36, 82), 21, self.acc)
-        d.text((48 + 18, 61), tag, font=f, fill=self.bg, anchor="lm")
-        f2 = font("SemiBold", 26)
-        d.text((W - 48, 61), s["header"]["right"], font=f2, fill=self.mut, anchor="rm")
-        # kopregel
-        f3 = font("Black", 60)
-        d.text((46, 104), s["header"]["title"], font=f3, fill=self.txt)
-        # footer
-        ff = font("SemiBold", 30)
-        fy = self.vy + self.vh + 52
-        d.text((W // 2, fy), s["footer"]["handle"], font=ff, fill=self.txt, anchor="mm")
-        d.text((W // 2, fy + 44), s["footer"]["line"], font=font("Medium", 24), fill=self.mut, anchor="mm")
+        d.rectangle((0, 0, W, self.vy), fill=self.head_bg)
+        d.rectangle((0, self.vy + self.vh, W, H), fill=self.foot_bg)
+        hd = s["header"]
+        # logo links, of een tag als er geen logo is
+        if self.logo:
+            lh = 76
+            lw = int(self.logo.width * lh / self.logo.height)
+            im.alpha_composite(self.logo.resize((lw, lh), Image.LANCZOS), (40, 22))
+        else:
+            f = font("ExtraBold", 26)
+            tag = hd.get("tag", "Rijles").upper()
+            tw = d.textlength(tag, font=f)
+            rounded(d, (48, 40, 48 + tw + 36, 82), 21, self.primary)
+            d.text((48 + 18, 61), tag, font=f, fill=self.white, anchor="lm")
+        # situatienummer als pill rechts
+        f2 = font("Bold", 24)
+        rt = hd["right"].upper()
+        rw = d.textlength(rt, font=f2)
+        tint = tuple(int(h + (l - h) * 0.28) for h, l in zip(self.head_bg[:3], self.light[:3])) + (255,)
+        rounded(d, (W - 48 - rw - 36, 41, W - 48, 81), 20, tint)
+        d.text((W - 48 - 18, 61), rt, font=f2, fill=self.head_txt, anchor="rm")
+        d.text((44, 112), hd["title"], font=font("Black", 58), fill=self.head_txt)
+        # footer: slogan in delen met eigen kleur + tweede regel
+        ft = s["footer"]
+        fy = self.vy + self.vh + 56
+        f3 = font("ExtraBold", 36)
+        parts = ft.get("parts") or [[ft.get("handle", ""), "#FFFFFF"]]
+        tot = sum(d.textlength(p[0], font=f3) for p in parts)
+        x = (W - tot) / 2
+        for txt, col in parts:
+            d.text((x, fy), txt, font=f3, fill=hexc(col), anchor="lm")
+            x += d.textlength(txt, font=f3)
+        d.text((W // 2, fy + 48), ft["line"], font=font("Medium", 25), fill=self.card_sub, anchor="mm")
         return im
 
     # ---------- helpers ----------
@@ -112,82 +145,75 @@ class Renderer:
 
     def progress(self, d, t):
         """Gesegmenteerde voortgangsbalk: één segment per scène."""
-        x0, x1, y, gap = 48, W - 48, 198, 8
+        x0, x1, y, gap = 48, W - 48, 202, 8
         n = len(self.scenes)
         segw = (x1 - x0 - gap * (n - 1)) / n
         for i, sc in enumerate(self.scenes):
             a = sc["start"]
             b = self.scenes[i + 1]["start"] if i + 1 < n else self.dur
             fx = x0 + i * (segw + gap)
-            rounded(d, (fx, y, fx + segw, y + 8), 4, hexc("#FFFFFF", 45))
+            rounded(d, (fx, y, fx + segw, y + 8), 4, self.track)
             p = max(0.0, min(1.0, (t - a) / (b - a)))
             if p > 0:
-                rounded(d, (fx, y, fx + max(8, segw * p), y + 8), 4, self.acc)
+                rounded(d, (fx, y, fx + max(8, segw * p), y + 8), 4, self.fill)
 
     def draw_card(self, im, t):
         i = self.scene_at(t)
         sc = self.scenes[i]
         x0, y0, x1, y1 = self.cardbox
-        layer = Image.new("RGBA", (W, H), (0, 0, 0, 0))
-        d = ImageDraw.Draw(layer)
-        # schaduw
         sh = Image.new("RGBA", (W, H), (0, 0, 0, 0))
-        ImageDraw.Draw(sh).rounded_rectangle((x0, y0 + 10, x1, y1 + 10), 28, fill=(0, 0, 0, 150))
+        ImageDraw.Draw(sh).rounded_rectangle((x0, y0 + 12, x1, y1 + 12), 28, fill=(5, 2, 40, 140))
         im.alpha_composite(sh.filter(ImageFilter.GaussianBlur(18)))
-        rounded(d, (x0, y0, x1, y1), 28, self.card, outline=hexc("#FFFFFF", 28), width=2)
-        # inhoud animeert in bij elke wissel
-        k = ease_out((t - sc["start"]) / 0.38) if i > 0 or t > 0.05 else 1.0
-        if i == 0:
-            k = ease_out((t - 0.0) / 0.38)
+        layer = Image.new("RGBA", (W, H), (0, 0, 0, 0))
+        rounded(ImageDraw.Draw(layer), (x0, y0, x1, y1), 28, self.card, outline=hexc("#FFFFFF", 40), width=2)
+        k = ease_out((t - sc["start"]) / 0.38)
         dy = int((1 - k) * 26)
         alpha = int(255 * k)
         c = Image.new("RGBA", (W, H), (0, 0, 0, 0))
         cd = ImageDraw.Draw(c)
-        kind = sc.get("kind", "step")
-        col = {"verdict": self.good, "poll": self.acc}.get(kind, self.acc)
-        cd.rounded_rectangle((x0 + 30, y0 + 30, x0 + 38, y1 - 30), 4, fill=col)
-        fl = font("ExtraBold", 26)
-        cd.text((x0 + 62, y0 + 36 + dy), sc["label"].upper(), font=fl, fill=col)
-        step = f"{i + 1}/{len(self.scenes)}"
-        cd.text((x1 - 34, y0 + 36), step, font=font("SemiBold", 24), fill=self.mut, anchor="ra")
-        ft = font("ExtraBold", 50)
-        cd.text((x0 + 60, y0 + 70 + dy), sc["title"], font=ft, fill=self.txt)
-        fs = font("Medium", 29)
-        cd.text((x0 + 62, y0 + 132 + dy), sc["sub"], font=fs, fill=self.mut)
+        cd.rounded_rectangle((x0 + 30, y0 + 30, x0 + 38, y1 - 30), 4, fill=self.acc)
+        cd.text((x0 + 62, y0 + 36 + dy), sc["label"].upper(), font=font("ExtraBold", 26), fill=self.acc)
+        cd.text((x1 - 34, y0 + 36), f"{i + 1}/{len(self.scenes)}", font=font("SemiBold", 24), fill=self.card_sub, anchor="ra")
+        cd.text((x0 + 60, y0 + 70 + dy), sc["title"], font=font("ExtraBold", 50), fill=self.white)
+        cd.text((x0 + 62, y0 + 132 + dy), sc["sub"], font=font("Medium", 29), fill=self.card_sub)
         if alpha < 255:
-            a = c.getchannel("A").point(lambda v: v * alpha // 255)
-            c.putalpha(a)
+            c.putalpha(c.getchannel("A").point(lambda v: v * alpha // 255))
         layer.alpha_composite(c)
         im.alpha_composite(layer)
+
+    def _choice(self, d, box, letter, label, col, k, big):
+        x0, y0, x1, y1 = box
+        h = y1 - y0
+        a = int(255 * k)
+        d.rounded_rectangle(box, h // 2 if not big else 30, fill=self.primary[:3] + (int(240 * k),), outline=col[:3] + (a,), width=4 if not big else 5)
+        if big:
+            d.rounded_rectangle((x0 + 18, y0 + 18, x0 + h - 18, y1 - 18), 20, fill=col[:3] + (a,))
+            d.text((x0 + h // 2, y0 + h // 2), letter, font=font("Black", 48), fill=self.primary[:3] + (a,), anchor="mm")
+            d.text((x0 + h + 20, y0 + h // 2), label, font=font("ExtraBold", 46), fill=(255, 255, 255, a), anchor="lm")
+        else:
+            d.text((x0 + 46, y0 + h // 2), letter, font=font("Black", 40), fill=col[:3] + (a,), anchor="mm")
+            d.text((x0 + 84, y0 + h // 2), label, font=font("Bold", 36), fill=(255, 255, 255, a), anchor="lm")
 
     def draw_hook(self, im, t):
         h = self.s["hook"]
         if t > h["end"]:
             return
         fade = 1 - ease_out((t - (h["end"] - 0.35)) / 0.35) if t > h["end"] - 0.35 else 1
-        inn = ease_out(t / 0.3)
-        a = fade * inn
+        a = fade * ease_out(t / 0.3)
         ov = Image.new("RGBA", (W, H), (0, 0, 0, 0))
         d = ImageDraw.Draw(ov)
-        d.rectangle((0, self.vy, W, self.vy + self.vh), fill=(8, 12, 16, int(150 * a)))
+        d.rectangle((0, self.vy, W, self.vy + self.vh), fill=self.ov[:3] + (int(160 * a),))
         cy = self.vy + 330
-        f1 = font("Black", 96)
         s = 0.92 + 0.08 * ease_out(t / 0.4)
         for j, line in enumerate(h["lines"]):
-            fill = self.acc if j == len(h["lines"]) - 1 else self.txt
-            f = font("Black", int(96 * s))
-            d.text((W // 2, cy + j * 112), line, font=f, fill=fill[:3] + (int(255 * a),), anchor="mm")
-        # A/B-chips
+            fill = self.light if j == len(h["lines"]) - 1 else self.white
+            d.text((W // 2, cy + j * 112), line, font=font("Black", int(96 * s)), fill=fill[:3] + (int(255 * a),), anchor="mm")
         cy2 = cy + len(h["lines"]) * 112 + 40
-        for j, (lab, col) in enumerate(((h["a"], self.good), (h["b"], self.bad))):
+        for j, (lab, col) in enumerate(((h["a"], self.opt_a), (h["b"], self.opt_b))):
             kk = ease_out((t - 0.25 - j * 0.12) / 0.3) * fade
             cx = W // 2 + (-205 if j == 0 else 205)
-            bw, bh = 380, 92
             yy = cy2 + int((1 - kk) * 30)
-            d.rounded_rectangle((cx - bw // 2, yy, cx + bw // 2, yy + bh), 46,
-                                fill=hexc("#0E141B", int(230 * kk)), outline=col[:3] + (int(255 * kk),), width=4)
-            d.text((cx - bw // 2 + 46, yy + bh // 2), "AB"[j], font=font("Black", 40), fill=col[:3] + (int(255 * kk),), anchor="mm")
-            d.text((cx - bw // 2 + 84, yy + bh // 2), lab, font=font("Bold", 36), fill=(255, 255, 255, int(255 * kk)), anchor="lm")
+            self._choice(d, (cx - 190, yy, cx + 190, yy + 92), "AB"[j], lab, col, kk, False)
         im.alpha_composite(ov)
 
     def draw_stamp(self, im, t):
@@ -201,18 +227,15 @@ class Renderer:
         f = font("Black", 64)
         tmp = Image.new("RGBA", (900, 220), (0, 0, 0, 0))
         d = ImageDraw.Draw(tmp)
-        tw = d.textlength(txt, font=f)
-        bw = int(tw + 170)
+        bw = int(d.textlength(txt, font=f) + 170)
         x0 = (900 - bw) // 2
-        d.rounded_rectangle((x0, 50, x0 + bw, 170), 26, fill=self.good[:3] + (235,))
-        # vinkje
+        d.rounded_rectangle((x0, 50, x0 + bw, 170), 26, fill=self.stamp_bg[:3] + (245,), outline=self.white, width=5)
         cx, cy = x0 + 60, 110
-        d.line([(cx - 18, cy), (cx - 4, cy + 16), (cx + 22, cy - 16)], fill=(14, 20, 27, 255), width=11, joint="curve")
-        d.text((x0 + 116, 110), txt, font=f, fill=(14, 20, 27, 255), anchor="lm")
+        d.line([(cx - 18, cy), (cx - 4, cy + 16), (cx + 22, cy - 16)], fill=self.stamp_txt, width=11, joint="curve")
+        d.text((x0 + 116, 110), txt, font=f, fill=self.stamp_txt, anchor="lm")
         sc = 1.6 - 0.6 * k
         tmp = tmp.resize((int(900 * sc), int(220 * sc)), Image.LANCZOS).rotate(-5, resample=Image.BICUBIC, expand=True)
-        al = tmp.getchannel("A").point(lambda v: int(v * a))
-        tmp.putalpha(al)
+        tmp.putalpha(tmp.getchannel("A").point(lambda v: int(v * a)))
         im.alpha_composite(tmp, ((W - tmp.width) // 2, self.vy + 380 - tmp.height // 2))
 
     def draw_poll(self, im, t):
@@ -222,19 +245,15 @@ class Renderer:
         ov = Image.new("RGBA", (W, H), (0, 0, 0, 0))
         d = ImageDraw.Draw(ov)
         k0 = ease_out((t - p["at"]) / 0.35)
-        d.rectangle((0, self.vy, W, self.vy + self.vh), fill=(8, 12, 16, int(120 * k0)))
+        d.rectangle((0, self.vy, W, self.vy + self.vh), fill=self.ov[:3] + (int(130 * k0),))
         d.text((W // 2, self.vy + 230), p["question"], font=font("Black", 70), fill=(255, 255, 255, int(255 * k0)), anchor="mm")
-        for j, (lab, col) in enumerate(((p["a"], self.good), (p["b"], self.bad))):
+        for j, (lab, col) in enumerate(((p["a"], self.opt_a), (p["b"], self.opt_b))):
             kk = ease_out((t - p["at"] - 0.15 - j * 0.12) / 0.35)
             y = self.vy + 330 + j * 150 + int((1 - kk) * 40)
-            # zachte "puls" op de knoppen om de comment uit te lokken
-            pulse = 1 + 0.015 * math.sin((t - p["at"]) * 4 + j * 1.6)
+            pulse = 1 + 0.015 * math.sin((t - p["at"]) * 4 + j * 1.6)  # zachte puls lokt de comment uit
             bw, bh = int(760 * pulse), int(118 * pulse)
             x0 = (W - bw) // 2
-            d.rounded_rectangle((x0, y, x0 + bw, y + bh), 30, fill=hexc("#0E141B", int(235 * kk)), outline=col[:3] + (int(255 * kk),), width=5)
-            d.rounded_rectangle((x0 + 18, y + 18, x0 + 18 + bh - 36, y + bh - 18), 20, fill=col[:3] + (int(255 * kk),))
-            d.text((x0 + 18 + (bh - 36) // 2, y + bh // 2), "AB"[j], font=font("Black", 48), fill=(14, 20, 27, int(255 * kk)), anchor="mm")
-            d.text((x0 + bh + 20, y + bh // 2), lab, font=font("ExtraBold", 46), fill=(255, 255, 255, int(255 * kk)), anchor="lm")
+            self._choice(d, (x0, y, x0 + bw, y + bh), "AB"[j], lab, col, kk, True)
         im.alpha_composite(ov)
 
     def frame(self, t):
@@ -277,7 +296,7 @@ def main():
     src = spec["source"]["file"]
     if not os.path.isabs(src):
         src = os.path.join(base, src)
-    r = Renderer(spec)
+    r = Renderer(spec, base)
 
     if "--preview" in sys.argv:
         for ts in sys.argv[sys.argv.index("--preview") + 1:]:
@@ -285,7 +304,7 @@ def main():
             fr = subprocess.run(["ffmpeg", "-v", "error", "-ss", str(t), "-i", src, "-frames:v", "1",
                                  "-vf", vf_cam(spec), "-f", "rawvideo", "-pix_fmt", "rgba", "-"],
                                 capture_output=True, check=True).stdout
-            base_im = Image.new("RGBA", (W, H), r.bg)
+            base_im = Image.new("RGBA", (W, H), (0, 0, 0, 255))
             cam = Image.frombytes("RGBA", (W, spec["layout"]["video_h"]), fr)
             base_im.paste(cam, (0, spec["layout"]["video_y"]))
             base_im.alpha_composite(r.frame(t))
@@ -304,7 +323,7 @@ def main():
            "-f", "rawvideo", "-pix_fmt", "rgba", "-s", f"{W}x{H}", "-r", str(FPS), "-i", "-",
            "-i", wav,
            "-filter_complex",
-           f"color=c={spec['brand'].get('bg', '#0E141B')}:s={W}x{H}:r={FPS}[bg];"
+           f"color=c=black:s={W}x{H}:r={FPS}[bg];"
            f"[0:v]fps={FPS},{vf_cam(spec)}[cam];"
            f"[bg][cam]overlay=0:{L['video_y']}:shortest=1[b];[b][1:v]overlay=0:0:format=auto[v]",
            "-map", "[v]", "-map", "2:a", "-frames:v", str(n),

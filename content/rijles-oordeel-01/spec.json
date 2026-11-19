@@ -10,12 +10,9 @@
   },
   "duration": 43.0,
   "brand": {
-    "bg": "#0E141B",
-    "card": "#121B24",
-    "accent": "#C6F432",
-    "muted": "#9AA7B4",
-    "good": "#2BD576",
-    "bad": "#FF5A5F"
+    "primary": "#2410C4",
+    "light": "#71CEFA",
+    "logo": "../brand/bvo-logo.png"
   },
   "layout": {
     "video_y": 240,
@@ -28,13 +25,21 @@
     ]
   },
   "header": {
-    "tag": "Rijles",
     "right": "Examensituatie #01",
     "title": "Handelde de leerling goed?"
   },
   "footer": {
-    "handle": "@jouwrijschool",
-    "line": "Elke dag een echte examensituatie"
+    "parts": [
+      [
+        "De ",
+        "#71CEFA"
+      ],
+      [
+        "Beste Voor Onderweg",
+        "#FFFFFF"
+      ]
+    ],
+    "line": "Verkeersschool voor 't Gooi en omstreken"
   },
   "hook": {
     "end": 2.6,

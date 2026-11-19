@@ -34,7 +34,8 @@ Kopieer `examples/fietser-bestelbus.json` naar `<project>/spec.json` en vul in:
 - `stamp`: tegelijk met de verdict-kaart. Tekst: `GOED GEHANDELD`, `TE SNEL`, `VOORRANG GEMIST`, etc.
 - `poll`: start 6 tot 8 s voor het einde. Altijd twee opties A/B.
 - `header.right`: doorlopende nummering ("Examensituatie #02"). Dat bouwt een serie op.
-- `footer.handle`: het account van de rijschool.
+- `brand`: `primary`, `light` en `logo` van de rijschool (standaard BVO, zie format.md).
+- `footer.parts`: slogan in delen met eigen kleur, `footer.line`: tweede regel.
 
 ## 4. Preview, dan render
 ```bash
