@@ -1,0 +1,28 @@
+{
+  "source": {"file": "../rijles-oordeel-01/source.mp4", "crop": [110, 0, 531, 944]},
+  "duration": 43.0,
+  "brand": {"primary": "#2410C4", "light": "#71CEFA", "logo": "../brand/bvo-logo.png"},
+  "layout": {"safe_cx": 470},
+  "intro": {"end": 2.6, "hook": ["POV: je rijles is", "een game-missie"], "title": "GOOI CITY", "sub": "EEN RIJLES VAN BVO"},
+  "mission": {"start": 2.6, "end": 5.6, "title": "MISSIE 1", "sub": "DE WOONWIJK"},
+  "hud": {"start": 2.6, "end": 35.3},
+  "help": [{"start": 12.0, "end": 15.6, "lines": ["Tip: haast kost punten.", "Geduld levert ze op."]}],
+  "objectives": [
+    {"start": 5.8, "end": 11.5, "parts": [["Laat de ", "w"], ["fietser", "b"], [" eerst gaan.", "w"]]},
+    {"start": 16.0, "end": 23.0, "parts": [["Wacht op de ", "w"], ["bestelbus", "y"], [".", "w"]]},
+    {"start": 29.6, "end": 35.2, "parts": [["Rij ", "w"], ["rustig", "b"], [" verder.", "w"]]}
+  ],
+  "points": [
+    {"at": 11.2, "value": 100, "label": "Fietser veilig"},
+    {"at": 23.2, "value": 100, "label": "Bestelbus veilig"},
+    {"at": 25.4, "value": 300, "label": "Missiebonus"}
+  ],
+  "passed": {"at": 25.0, "end": 29.4, "title": "MISSIE GESLAAGD", "sub": "RIJVAARDIGHEID +"},
+  "outro": {"at": 35.4, "kicker": "NIEUWE MISSIE BESCHIKBAAR", "title": "JOUW RIJBEWIJS", "sub": "START BIJ BVO",
+            "items": [["like", "Like"], ["comment", "Reageer"], ["share", "Deel"]]},
+  "audio": {"music": "music-neon.mp3", "music_offset": 8, "music_gain": 0.9, "source_gain": 0.35,
+            "sfx": [{"at": 0.0, "file": "zhhh", "db": -8}, {"at": 2.55, "file": "impact-boom", "db": -9},
+                    {"at": 11.2, "file": "pop-back", "db": -8}, {"at": 23.2, "file": "pop-back", "db": -8},
+                    {"at": 22.0, "file": "riser", "db": -10}, {"at": 25.0, "file": "impact-boom", "db": -4},
+                    {"at": 35.3, "file": "zhhh", "db": -8}]}
+}
