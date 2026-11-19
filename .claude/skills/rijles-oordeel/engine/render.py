@@ -102,7 +102,14 @@ class Renderer:
         s, im = self.s, Image.new("RGBA", (W, H), (0, 0, 0, 0))
         d = ImageDraw.Draw(im)
         d.rectangle((0, 0, W, self.vy), fill=self.head_bg)
-        d.rectangle((0, self.vy + self.vh, W, H), fill=self.foot_bg)
+        if self.vy + self.vh < H:
+            d.rectangle((0, self.vy + self.vh, W, H), fill=self.foot_bg)
+        bf = s["layout"].get("bottom_fade")
+        if bf:  # donkere overgang onderin, zodat de TikTok-caption leesbaar blijft
+            y0 = bf.get("from", 1420)
+            for y in range(y0, H):
+                a = int(bf.get("alpha", 170) * ((y - y0) / (H - y0)) ** 0.8)
+                d.line([(0, y), (W, y)], fill=self.ov[:3] + (a,))
         hd = s["header"]
         # logo links, of een tag als er geen logo is
         if self.logo:

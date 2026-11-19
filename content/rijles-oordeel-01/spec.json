@@ -2,10 +2,10 @@
   "source": {
     "file": "source.mp4",
     "crop": [
-      0,
-      150,
-      704,
-      613
+      70,
+      99,
+      563,
+      845
     ]
   },
   "duration": 43.0,
@@ -16,17 +16,21 @@
   },
   "layout": {
     "video_y": 300,
-    "video_h": 940,
+    "video_h": 1620,
     "card": [
       0,
       1240,
       1080,
-      1920
+      1420
     ],
     "card_band": true,
     "progress": false,
     "counter": false,
-    "safe_cx": 470
+    "safe_cx": 470,
+    "bottom_fade": {
+      "from": 1420,
+      "alpha": 170
+    }
   },
   "header": {
     "title": "Handelde de leerling goed?",

@@ -12,10 +12,10 @@
 | Zone | Wat TikTok er toont | Regel |
 |---|---|---|
 | y 0-150 | Volgend / Voor jou | Niets; header begint pas op y 150 (logo 150, vraag 220) |
-| y 1420-1920 | Naam, caption, muziek | Alleen effen merkkleur; geen tekst |
+| y 1420-1920 | Naam, caption, muziek | Camerabeeld loopt door met donkere overgang (`layout.bottom_fade`); geen tekst |
 | x 940-1080 | Like / reageer / deel-knoppen | Overlays centreren op `layout.safe_cx: 470` |
 
-Vaste opbouw: header 0-300, video 300-1240 (bron uitgesneden tot 1080x940), tekstkaart 1240-1420.
+Vaste opbouw: header 0-300, video 300-1920 (bron ingezoomd tot 2:3, minder plafond), tekstkaart als blauwe balk over het beeld op 1240-1420, daaronder beeld met donkere overgang. Geen groot leeg merkvlak onderin.
 ## Huisstijl (standaard: BVO Verkeersschool)
 - `brand.primary` #2410C4 (donkerblauw): kaarten, footer, voortgangsbalk, kopteksten.
 - `brand.light` #71CEFA (lichtblauw): accenten, labels, optie A, stempel.
