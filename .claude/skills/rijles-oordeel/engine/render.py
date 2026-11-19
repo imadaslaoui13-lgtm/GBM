@@ -290,9 +290,13 @@ class Renderer:
             d.polygon([(cx - w * 0.28, cy + h / 2 - r * 0.2), (cx - w * 0.05, cy + h / 2 - r * 0.2), (cx - w * 0.36, cy + h / 2 + r * 0.32)], fill=col)
             for k in (-1, 0, 1):
                 d.ellipse((cx + k * r * 0.38 - r * 0.1, cy - r * 0.22, cx + k * r * 0.38 + r * 0.1, cy - r * 0.02), fill=self.primary)
-        else:  # share: pijl naar rechts-boven
-            pts = [(-0.75, 0.55), (-0.75, 0.15), (0.1, -0.25), (0.1, -0.6), (0.8, 0.0), (0.1, 0.6), (0.1, 0.25), (-0.4, 0.35)]
-            d.polygon([(cx + x * r, cy + y * r) for x, y in pts], fill=col)
+        else:  # share: gebogen pijl naar rechts (bekend deel-icoon)
+            ox, oy = cx - 0.1 * r, cy - 0.06 * r
+            P = lambda x, y: (ox + x * r, oy + y * r)
+            ro, w = 0.92, 0.36
+            d.arc([P(0.2 - ro, 0.62 - ro), P(0.2 + ro, 0.62 + ro)], 180, 270, fill=col, width=int(w * r))
+            d.ellipse([P(-0.54 - w / 2, 0.62 - w / 2), P(-0.54 + w / 2, 0.62 + w / 2)], fill=col)
+            d.polygon([P(0.12, -0.66), P(0.88, -0.12), P(0.12, 0.42)], fill=col)
 
     def draw_cta(self, im, t):
         c = self.s.get("cta")
