@@ -70,9 +70,9 @@
     },
     {
       "start": 35.5,
-      "label": "Zat jij goed?",
-      "title": "Koos jij A? Dan zat je goed",
-      "sub": "Tag iemand die hier zou doorrijden.",
+      "label": "Vond je dit nuttig?",
+      "title": "Like, reageer en deel",
+      "sub": "Zo helpen we meer leerlingen slagen.",
       "kind": "end"
     }
   ],
@@ -80,5 +80,26 @@
     "at": 25.0,
     "end": 29.0,
     "text": "GOED GEHANDELD"
+  },
+  "cta": {
+    "at": 35.5,
+    "lines": [
+      "Iets geleerd?",
+      "Help anderen ook!"
+    ],
+    "items": [
+      [
+        "like",
+        "Like"
+      ],
+      [
+        "comment",
+        "Reageer"
+      ],
+      [
+        "share",
+        "Deel"
+      ]
+    ]
   }
 }

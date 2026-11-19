@@ -273,6 +273,58 @@ class Renderer:
             self._choice(d, (x0, y, x0 + bw, y + bh), "AB"[j], lab, col, kk, True)
         im.alpha_composite(ov)
 
+    def _icon(self, d, kind, cx, cy, r, col):
+        """Eenvoudige vectoriconen: hart, tekstballon, deelpijl."""
+        if kind == "like":
+            rr = r * 0.42
+            d.ellipse((cx - 2 * rr, cy - rr * 1.5, cx, cy + rr * 0.5), fill=col)
+            d.ellipse((cx, cy - rr * 1.5, cx + 2 * rr, cy + rr * 0.5), fill=col)
+            d.polygon([(cx - 1.93 * rr, cy - 0.3 * rr), (cx + 1.93 * rr, cy - 0.3 * rr), (cx, cy + 1.75 * rr)], fill=col)
+        elif kind == "comment":
+            w, h = r * 1.5, r * 1.05
+            d.rounded_rectangle((cx - w / 2, cy - h / 2 - r * 0.12, cx + w / 2, cy + h / 2 - r * 0.12), int(r * 0.3), fill=col)
+            d.polygon([(cx - w * 0.28, cy + h / 2 - r * 0.2), (cx - w * 0.05, cy + h / 2 - r * 0.2), (cx - w * 0.36, cy + h / 2 + r * 0.32)], fill=col)
+            for k in (-1, 0, 1):
+                d.ellipse((cx + k * r * 0.38 - r * 0.1, cy - r * 0.22, cx + k * r * 0.38 + r * 0.1, cy - r * 0.02), fill=self.primary)
+        else:  # share: pijl naar rechts-boven
+            pts = [(-0.75, 0.55), (-0.75, 0.15), (0.1, -0.25), (0.1, -0.6), (0.8, 0.0), (0.1, 0.6), (0.1, 0.25), (-0.4, 0.35)]
+            d.polygon([(cx + x * r, cy + y * r) for x, y in pts], fill=col)
+
+    def draw_cta(self, im, t):
+        c = self.s.get("cta")
+        if not c or t < c["at"]:
+            return
+        ov = Image.new("RGBA", (W, H), (0, 0, 0, 0))
+        d = ImageDraw.Draw(ov)
+        k0 = ease_out((t - c["at"]) / 0.35)
+        d.rectangle((0, self.vy, W, self.vy + self.vh), fill=self.ov[:3] + (int(150 * k0),))
+        ty = self.vy + 250
+        for j, line in enumerate(c["lines"]):
+            col = self.light if j == len(c["lines"]) - 1 else self.white
+            d.text((W // 2, ty + j * 92 + int((1 - k0) * 20)), line, font=font("Black", 78), fill=col[:3] + (int(255 * k0),), anchor="mm")
+        n = len(c["items"])
+        gap = 300
+        y = ty + len(c["lines"]) * 92 + 170
+        for j, (kind, label) in enumerate(c["items"]):
+            kk = ease_back((t - c["at"] - 0.35 - j * 0.22) / 0.45)
+            if kk <= 0:
+                continue
+            # eigen laag per knop: lage alpha mag geen gat slaan in de donkere laag
+            im.alpha_composite(ov)
+            ov = Image.new("RGBA", (W, H), (0, 0, 0, 0))
+            d = ImageDraw.Draw(ov)
+            a = int(255 * min(1, kk))
+            cx = W // 2 + int((j - (n - 1) / 2) * gap)
+            # om de beurt een korte "tik" zodat het oog meegaat
+            beat = (t - c["at"] - 1.2) % (0.6 * n)
+            pop = 1 + (0.08 * math.sin(math.pi * beat / 0.6) if j * 0.6 <= beat < (j + 1) * 0.6 and t - c["at"] > 1.2 else 0)
+            r = int(92 * kk * pop)
+            d.ellipse((cx - r, y - r, cx + r, y + r), fill=self.light[:3] + (a,), outline=(255, 255, 255, a), width=5)
+            self._icon(d, kind, cx, y + (r * 0.05 if kind == "like" else 0), r * 0.62, self.primary[:3] + (a,))
+            la = int(255 * max(0.0, min(1.0, (t - c["at"] - 0.55 - j * 0.22) / 0.25)))
+            d.text((cx, y + 135), label, font=font("ExtraBold", 44), fill=(255, 255, 255, la), anchor="mm")
+        im.alpha_composite(ov)
+
     def frame(self, t):
         im = self.static.copy()
         d = ImageDraw.Draw(im)
@@ -280,6 +332,7 @@ class Renderer:
         self.draw_hook(im, t)
         self.draw_stamp(im, t)
         self.draw_poll(im, t)
+        self.draw_cta(im, t)
         self.draw_card(im, t)
         return im
 

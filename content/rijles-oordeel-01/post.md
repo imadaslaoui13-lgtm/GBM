@@ -10,7 +10,7 @@
 ## Caption
 Wachten of doorrijden? Wat had jij gedaan? 👇
 Een fietser én een bestelbus vlak voor de lesauto. Kijk tot het eind voor het oordeel van de instructeur.
-Koos jij goed? Zet A of B in de comments en tag iemand die hier zou doorrijden.
+Iets geleerd? Like, reageer en deel met iemand die binnenkort examen doet.
 
 ## Pinned comment
 A of B? Ik reageer op iedereen die zijn keuze uitlegt 👀
