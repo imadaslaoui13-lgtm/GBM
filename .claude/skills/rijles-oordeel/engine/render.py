@@ -91,6 +91,7 @@ class Renderer:
             self.logo = Image.open(lp).convert("RGBA")
         L = spec["layout"]
         self.vy, self.vh = L["video_y"], L["video_h"]
+        self.cx = L.get("safe_cx", W // 2)  # midden van het vrije gebied (TikTok-knoppen rechts)
         self.cardbox = tuple(L["card"])
         self.scenes = spec["scenes"]
         self.dur = spec["duration"]
@@ -225,11 +226,11 @@ class Renderer:
         s = 0.92 + 0.08 * ease_out(t / 0.4)
         for j, line in enumerate(h["lines"]):
             fill = self.light if j == len(h["lines"]) - 1 else self.white
-            d.text((W // 2, cy + j * 112), line, font=font("Black", int(96 * s)), fill=fill[:3] + (int(255 * a),), anchor="mm")
+            d.text((self.cx, cy + j * 112), line, font=font("Black", int(96 * s)), fill=fill[:3] + (int(255 * a),), anchor="mm")
         cy2 = cy + len(h["lines"]) * 112 + 40
         for j, (lab, col) in enumerate(((h["a"], self.opt_a), (h["b"], self.opt_b))):
             kk = ease_out((t - 0.25 - j * 0.12) / 0.3) * fade
-            cx = W // 2 + (-205 if j == 0 else 205)
+            cx = self.cx + (-205 if j == 0 else 205)
             yy = cy2 + int((1 - kk) * 30)
             self._choice(d, (cx - 190, yy, cx + 190, yy + 92), "AB"[j], lab, col, kk, False)
         im.alpha_composite(ov)
@@ -254,7 +255,7 @@ class Renderer:
         sc = 1.6 - 0.6 * k
         tmp = tmp.resize((int(900 * sc), int(220 * sc)), Image.LANCZOS).rotate(-5, resample=Image.BICUBIC, expand=True)
         tmp.putalpha(tmp.getchannel("A").point(lambda v: int(v * a)))
-        im.alpha_composite(tmp, ((W - tmp.width) // 2, self.vy + 380 - tmp.height // 2))
+        im.alpha_composite(tmp, (self.cx - tmp.width // 2, self.vy + 380 - tmp.height // 2))
 
     def draw_poll(self, im, t):
         p = self.s.get("poll")
@@ -264,13 +265,13 @@ class Renderer:
         d = ImageDraw.Draw(ov)
         k0 = ease_out((t - p["at"]) / 0.35)
         d.rectangle((0, self.vy, W, self.vy + self.vh), fill=self.ov[:3] + (int(130 * k0),))
-        d.text((W // 2, self.vy + 230), p["question"], font=font("Black", 70), fill=(255, 255, 255, int(255 * k0)), anchor="mm")
+        d.text((self.cx, self.vy + 230), p["question"], font=font("Black", 70), fill=(255, 255, 255, int(255 * k0)), anchor="mm")
         for j, (lab, col) in enumerate(((p["a"], self.opt_a), (p["b"], self.opt_b))):
             kk = ease_out((t - p["at"] - 0.15 - j * 0.12) / 0.35)
             y = self.vy + 330 + j * 150 + int((1 - kk) * 40)
             pulse = 1 + 0.015 * math.sin((t - p["at"]) * 4 + j * 1.6)  # zachte puls lokt de comment uit
             bw, bh = int(760 * pulse), int(118 * pulse)
-            x0 = (W - bw) // 2
+            x0 = self.cx - bw // 2
             self._choice(d, (x0, y, x0 + bw, y + bh), "AB"[j], lab, col, kk, True)
         im.alpha_composite(ov)
 
@@ -311,7 +312,7 @@ class Renderer:
         ty = self.vy + 250
         for j, line in enumerate(c["lines"]):
             col = self.light if j == len(c["lines"]) - 1 else self.white
-            d.text((W // 2, ty + j * 92 + int((1 - k0) * 20)), line, font=font("Black", 78), fill=col[:3] + (int(255 * k0),), anchor="mm")
+            d.text((self.cx, ty + j * 92 + int((1 - k0) * 20)), line, font=font("Black", 78), fill=col[:3] + (int(255 * k0),), anchor="mm")
         n = len(c["items"])
         gap = 300
         y = ty + len(c["lines"]) * 92 + 170
@@ -324,7 +325,7 @@ class Renderer:
             ov = Image.new("RGBA", (W, H), (0, 0, 0, 0))
             d = ImageDraw.Draw(ov)
             a = int(255 * min(1, kk))
-            cx = W // 2 + int((j - (n - 1) / 2) * gap)
+            cx = self.cx + int((j - (n - 1) / 2) * gap)
             # om de beurt een korte "tik" zodat het oog meegaat
             beat = (t - c["at"] - 1.2) % (0.6 * n)
             pop = 1 + (0.08 * math.sin(math.pi * beat / 0.6) if j * 0.6 <= beat < (j + 1) * 0.6 and t - c["at"] > 1.2 else 0)

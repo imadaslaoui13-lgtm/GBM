@@ -3,9 +3,9 @@
     "file": "../../../../content/rijles-oordeel-01/source.mp4",
     "crop": [
       0,
-      3,
+      150,
       704,
-      938
+      613
     ]
   },
   "duration": 43.0,
@@ -15,23 +15,24 @@
     "logo": "../../../../content/brand/bvo-logo.png"
   },
   "layout": {
-    "video_y": 166,
-    "video_h": 1440,
+    "video_y": 300,
+    "video_h": 940,
     "card": [
       0,
-      1606,
+      1240,
       1080,
       1920
     ],
     "card_band": true,
     "progress": false,
-    "counter": false
+    "counter": false,
+    "safe_cx": 470
   },
   "header": {
     "title": "Handelde de leerling goed?",
     "logo_h": 60,
-    "logo_y": 18,
-    "title_y": 88,
+    "logo_y": 150,
+    "title_y": 220,
     "title_size": 54
   },
   "hook": {

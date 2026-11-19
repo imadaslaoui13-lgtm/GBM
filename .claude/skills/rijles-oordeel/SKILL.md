@@ -42,7 +42,7 @@ Kopieer `examples/fietser-bestelbus.json` naar `<project>/spec.json` en vul in:
 ```bash
 python3 <skill>/engine/render.py spec.json out/short.mp4 --preview 1 8 26 38
 ```
-Bekijk de PNG's. Check: oude tekst volledig bedekt, niets buiten beeld, tekst niet afgekapt. Daarna de volledige render (ca. 3 min voor 45 s):
+Bekijk de PNG's. Check: oude tekst volledig bedekt, niets buiten beeld, tekst niet afgekapt, en alles binnen de TikTok safe zone (zie format.md: niets boven y 150, onder y 1420 of rechts van x 940). Daarna de volledige render (ca. 3 min voor 45 s):
 ```bash
 python3 <skill>/engine/render.py spec.json out/short.mp4
 ```

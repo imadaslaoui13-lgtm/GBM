@@ -8,10 +8,14 @@
 | Stempel bij het oordeel | Beloning: was jouw keuze goed? | Groot, schuin, dreun eronder |
 | Eindscherm Like / Reageer / Deel | Interactie = bereik | Drie knoppen poppen één voor één in; stel de hookvraag niet opnieuw |
 
-## Safe zones (TikTok / Reels)
-- Onderste 320 px en rechter 140 px vallen onder knoppen en caption: daar alleen sfeer (handle), geen kerninfo.
-- Kaart = de balk onder de video (`layout.card_band: true`, y 1606-1920). Het camerabeeld blijft zo helemaal vrij. Let op: op TikTok valt de caption deels over deze balk; houd de titel kort.
+## Safe zones TikTok / Reels (1080x1920)
+| Zone | Wat TikTok er toont | Regel |
+|---|---|---|
+| y 0-150 | Volgend / Voor jou | Niets; header begint pas op y 150 (logo 150, vraag 220) |
+| y 1420-1920 | Naam, caption, muziek | Alleen effen merkkleur; geen tekst |
+| x 940-1080 | Like / reageer / deel-knoppen | Overlays centreren op `layout.safe_cx: 470` |
 
+Vaste opbouw: header 0-300, video 300-1240 (bron uitgesneden tot 1080x940), tekstkaart 1240-1420.
 ## Huisstijl (standaard: BVO Verkeersschool)
 - `brand.primary` #2410C4 (donkerblauw): kaarten, footer, voortgangsbalk, kopteksten.
 - `brand.light` #71CEFA (lichtblauw): accenten, labels, optie A, stempel.
