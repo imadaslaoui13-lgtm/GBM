@@ -123,7 +123,9 @@ class Renderer:
         d.text((W - 48 - 18, 61), rt, font=f2, fill=self.head_txt, anchor="rm")
         d.text((44, 112), hd["title"], font=font("Black", 58), fill=self.head_txt)
         # footer: slogan in delen met eigen kleur + tweede regel
-        ft = s["footer"]
+        ft = s.get("footer")
+        if not ft:
+            return im
         fy = self.vy + self.vh + 56
         f3 = font("ExtraBold", 36)
         parts = ft.get("parts") or [[ft.get("handle", ""), "#FFFFFF"]]
@@ -161,17 +163,22 @@ class Renderer:
         i = self.scene_at(t)
         sc = self.scenes[i]
         x0, y0, x1, y1 = self.cardbox
-        sh = Image.new("RGBA", (W, H), (0, 0, 0, 0))
-        ImageDraw.Draw(sh).rounded_rectangle((x0, y0 + 12, x1, y1 + 12), 28, fill=(5, 2, 40, 140))
-        im.alpha_composite(sh.filter(ImageFilter.GaussianBlur(18)))
         layer = Image.new("RGBA", (W, H), (0, 0, 0, 0))
-        rounded(ImageDraw.Draw(layer), (x0, y0, x1, y1), 28, self.card, outline=hexc("#FFFFFF", 40), width=2)
+        if self.s["layout"].get("card_band"):
+            # kaart = de balk onder de video: camerabeeld blijft helemaal vrij
+            ImageDraw.Draw(layer).rectangle((x0, y0, x1, y1), fill=self.card)
+            x0, x1, y0 = x0 + 18, x1 - 18, y0 + 4
+        else:
+            sh = Image.new("RGBA", (W, H), (0, 0, 0, 0))
+            ImageDraw.Draw(sh).rounded_rectangle((x0, y0 + 12, x1, y1 + 12), 28, fill=(5, 2, 40, 140))
+            im.alpha_composite(sh.filter(ImageFilter.GaussianBlur(18)))
+            rounded(ImageDraw.Draw(layer), (x0, y0, x1, y1), 28, self.card, outline=hexc("#FFFFFF", 40), width=2)
         k = ease_out((t - sc["start"]) / 0.38)
         dy = int((1 - k) * 26)
         alpha = int(255 * k)
         c = Image.new("RGBA", (W, H), (0, 0, 0, 0))
         cd = ImageDraw.Draw(c)
-        cd.rounded_rectangle((x0 + 30, y0 + 30, x0 + 38, y1 - 30), 4, fill=self.acc)
+        cd.rounded_rectangle((x0 + 30, y0 + 30, x0 + 38, y0 + 156), 4, fill=self.acc)
         cd.text((x0 + 62, y0 + 36 + dy), sc["label"].upper(), font=font("ExtraBold", 26), fill=self.acc)
         cd.text((x1 - 34, y0 + 36), f"{i + 1}/{len(self.scenes)}", font=font("SemiBold", 24), fill=self.card_sub, anchor="ra")
         cd.text((x0 + 60, y0 + 70 + dy), sc["title"], font=font("ExtraBold", 50), fill=self.white)

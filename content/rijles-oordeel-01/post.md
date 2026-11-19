@@ -21,4 +21,4 @@ A of B? Ik reageer op iedereen die zijn keuze uitlegt 👀
 ## Posten
 - Beste tijd: doordeweeks tussen 17:00 en 20:00.
 - Cover: frame op 1,2 s (hook met A/B in beeld).
-- Huisstijl BVO: logo in de header, slogan "De Beste Voor Onderweg" in de footer.
+- Huisstijl BVO: logo in de header, tekstkaart in de blauwe balk onderin.

@@ -35,7 +35,7 @@ Kopieer `examples/fietser-bestelbus.json` naar `<project>/spec.json` en vul in:
 - `poll`: start 6 tot 8 s voor het einde. Altijd twee opties A/B.
 - `header.right`: doorlopende nummering ("Examensituatie #02"). Dat bouwt een serie op.
 - `brand`: `primary`, `light` en `logo` van de rijschool (standaard BVO, zie format.md).
-- `footer.parts`: slogan in delen met eigen kleur, `footer.line`: tweede regel.
+- `layout.card_band: true` (standaard): de scènekaart vult de balk onder de video. Zonder band-modus zweeft de kaart over het beeld (`layout.card` = positie); dan kan `footer` een slogan tonen.
 
 ## 4. Preview, dan render
 ```bash

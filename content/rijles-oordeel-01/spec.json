@@ -18,28 +18,16 @@
     "video_y": 240,
     "video_h": 1440,
     "card": [
-      24,
-      1222,
-      1056,
-      1408
-    ]
+      0,
+      1680,
+      1080,
+      1920
+    ],
+    "card_band": true
   },
   "header": {
     "right": "Examensituatie #01",
     "title": "Handelde de leerling goed?"
-  },
-  "footer": {
-    "parts": [
-      [
-        "De ",
-        "#71CEFA"
-      ],
-      [
-        "Beste Voor Onderweg",
-        "#FFFFFF"
-      ]
-    ],
-    "line": "Verkeersschool voor 't Gooi en omstreken"
   },
   "hook": {
     "end": 2.6,
