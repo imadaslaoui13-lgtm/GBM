@@ -6,7 +6,7 @@
 | Voortgangsbalk in segmenten | Kijker ziet hoeveel er nog komt, dus kijkt uit | Eén segment per scène |
 | Scènekaart per moment | Uitleg zonder geluid (85% kijkt zonder geluid) | Label + titel + één zin, wissel elke 5-10 s |
 | Stempel bij het oordeel | Beloning: was jouw keuze goed? | Groot, schuin, dreun eronder |
-| Poll aan het eind | Comments = bereik | Twee opties, letter A/B zodat reageren 1 teken is |
+| Afsluiter met tag-oproep | Delen en taggen = bereik | Verwijs terug naar de keuze uit de hook, stel de vraag niet opnieuw |
 
 ## Safe zones (TikTok / Reels)
 - Onderste 320 px en rechter 140 px vallen onder knoppen en caption: daar alleen sfeer (handle), geen kerninfo.

@@ -1,6 +1,6 @@
 ---
 name: rijles-oordeel
-description: Maakt van een ruwe rijlesvideo (dashcam of telefoon in de lesauto) een virale verticale short in het vaste format "Handelde de leerling goed?" - hook met A/B-keuze in de eerste 2,5 s, gesegmenteerde voortgangsbalk, geanimeerde scènekaarten per moment, oordeelstempel van de instructeur, een poll "Wat doe jij?" als comment-trigger, kleurcorrectie, geluidstikken en -14 LUFS. Plus posttekst met 3 hooks. Gebruik bij rijles, lesauto, leerling, examensituatie, verkeerssituatie, rijschoolvideo, "maak hier een viral van", of als iemand een rijlesvideo aanlevert.
+description: Maakt van een ruwe rijlesvideo (dashcam of telefoon in de lesauto) een virale verticale short in het vaste format "Handelde de leerling goed?" - hook met A/B-keuze in de eerste 2,5 s, gesegmenteerde voortgangsbalk, geanimeerde scènekaarten per moment, oordeelstempel van de instructeur, een afsluiter met tag-oproep, kleurcorrectie, geluidstikken en -14 LUFS. Plus posttekst met 3 hooks. Gebruik bij rijles, lesauto, leerling, examensituatie, verkeerssituatie, rijschoolvideo, "maak hier een viral van", of als iemand een rijlesvideo aanlevert.
 argument-hint: "<video> [situatienummer] [handle]"
 ---
 
@@ -30,9 +30,9 @@ Verzin nooit cijfers ("90% zakt hierop") die je niet kunt onderbouwen.
 
 ## 3. Spec schrijven
 Kopieer `examples/fietser-bestelbus.json` naar `<project>/spec.json` en vul in:
-- `scenes`: 4 tot 6 kaarten. Vast patroon: **Kijk mee → Moment 1 → Moment 2 → Oordeel instructeur (`kind: verdict`) → Jouw oordeel (`kind: poll`)**. `start` = de seconde waarop het moment in beeld begint. Titel max 28 tekens, sub max 45 tekens.
+- `scenes`: 4 tot 6 kaarten. Vast patroon: **Kijk mee → Moment 1 → Moment 2 → Oordeel instructeur (`kind: verdict`) → Afsluiter (`kind: end`)**. De afsluiter verwijst terug naar de keuze uit de hook ("Koos jij A? Dan zat je goed") en vraagt om te taggen. Stel de vraag nooit opnieuw: de hook vraagt, het oordeel antwoordt. `start` = de seconde waarop het moment in beeld begint. Titel max 28 tekens, sub max 45 tekens.
 - `stamp`: tegelijk met de verdict-kaart. Tekst: `GOED GEHANDELD`, `TE SNEL`, `VOORRANG GEMIST`, etc.
-- `poll`: start 6 tot 8 s voor het einde. Altijd twee opties A/B.
+- `poll`: standaard uit. Alleen gebruiken als er géén oordeel in de video zit (dan is de poll het einde).
 - `header`: alleen `title` plus de compacte maten uit het voorbeeld. `header.right` (label rechtsboven) en `layout.progress` (voortgangsbalk) staan bewust uit.
 - `brand`: `primary`, `light` en `logo` van de rijschool (standaard BVO, zie format.md).
 - `layout.card_band: true` (standaard): de scènekaart vult de balk onder de video. Zonder band-modus zweeft de kaart over het beeld (`layout.card` = positie); dan kan `footer` een slogan tonen.

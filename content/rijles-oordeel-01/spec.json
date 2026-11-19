@@ -70,21 +70,15 @@
     },
     {
       "start": 35.5,
-      "label": "Jouw oordeel",
-      "title": "Wat had jij gedaan?",
-      "sub": "Reageer met A of B in de comments.",
-      "kind": "poll"
+      "label": "Zat jij goed?",
+      "title": "Koos jij A? Dan zat je goed",
+      "sub": "Tag iemand die hier zou doorrijden.",
+      "kind": "end"
     }
   ],
   "stamp": {
     "at": 25.0,
     "end": 29.0,
     "text": "GOED GEHANDELD"
-  },
-  "poll": {
-    "at": 35.5,
-    "question": "Wat doe jij?",
-    "a": "Wachten",
-    "b": "Doorrijden"
   }
 }
