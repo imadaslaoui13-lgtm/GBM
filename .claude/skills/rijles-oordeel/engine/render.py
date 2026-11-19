@@ -105,9 +105,9 @@ class Renderer:
         hd = s["header"]
         # logo links, of een tag als er geen logo is
         if self.logo:
-            lh = 76
+            lh = hd.get("logo_h", 76)
             lw = int(self.logo.width * lh / self.logo.height)
-            im.alpha_composite(self.logo.resize((lw, lh), Image.LANCZOS), (40, 22))
+            im.alpha_composite(self.logo.resize((lw, lh), Image.LANCZOS), (40, hd.get("logo_y", 22)))
         else:
             f = font("ExtraBold", 26)
             tag = hd.get("tag", "Rijles").upper()
@@ -115,13 +115,21 @@ class Renderer:
             rounded(d, (48, 40, 48 + tw + 36, 82), 21, self.primary)
             d.text((48 + 18, 61), tag, font=f, fill=self.white, anchor="lm")
         # situatienummer als pill rechts
+        if hd.get("right"):
+            self._pill(d, hd["right"])
+        d.text((44, hd.get("title_y", 112)), hd["title"], font=font("Black", hd.get("title_size", 58)), fill=self.head_txt)
+        return self._footer(im, d)
+
+    def _pill(self, d, text):
         f2 = font("Bold", 24)
-        rt = hd["right"].upper()
+        rt = text.upper()
         rw = d.textlength(rt, font=f2)
         tint = tuple(int(h + (l - h) * 0.28) for h, l in zip(self.head_bg[:3], self.light[:3])) + (255,)
         rounded(d, (W - 48 - rw - 36, 41, W - 48, 81), 20, tint)
         d.text((W - 48 - 18, 61), rt, font=f2, fill=self.head_txt, anchor="rm")
-        d.text((44, 112), hd["title"], font=font("Black", 58), fill=self.head_txt)
+
+    def _footer(self, im, d):
+        s = self.s
         # footer: slogan in delen met eigen kleur + tweede regel
         ft = s.get("footer")
         if not ft:
@@ -146,7 +154,9 @@ class Renderer:
         return cur
 
     def progress(self, d, t):
-        """Gesegmenteerde voortgangsbalk: één segment per scène."""
+        """Gesegmenteerde voortgangsbalk: één segment per scène (uit met layout.progress: false)."""
+        if not self.s["layout"].get("progress", True):
+            return
         x0, x1, y, gap = 48, W - 48, 202, 8
         n = len(self.scenes)
         segw = (x1 - x0 - gap * (n - 1)) / n

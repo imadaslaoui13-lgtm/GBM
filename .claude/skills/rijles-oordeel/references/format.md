@@ -7,11 +7,10 @@
 | Scènekaart per moment | Uitleg zonder geluid (85% kijkt zonder geluid) | Label + titel + één zin, wissel elke 5-10 s |
 | Stempel bij het oordeel | Beloning: was jouw keuze goed? | Groot, schuin, dreun eronder |
 | Poll aan het eind | Comments = bereik | Twee opties, letter A/B zodat reageren 1 teken is |
-| Serienummer | Volgers terug laten komen | "Examensituatie #NN" |
 
 ## Safe zones (TikTok / Reels)
 - Onderste 320 px en rechter 140 px vallen onder knoppen en caption: daar alleen sfeer (handle), geen kerninfo.
-- Kaart = de balk onder de video (`layout.card_band: true`, y 1680-1920). Het camerabeeld blijft zo helemaal vrij. Let op: op TikTok valt de caption deels over deze balk; houd de titel kort.
+- Kaart = de balk onder de video (`layout.card_band: true`, y 1606-1920). Het camerabeeld blijft zo helemaal vrij. Let op: op TikTok valt de caption deels over deze balk; houd de titel kort.
 
 ## Huisstijl (standaard: BVO Verkeersschool)
 - `brand.primary` #2410C4 (donkerblauw): kaarten, footer, voortgangsbalk, kopteksten.
@@ -21,3 +20,6 @@
 - Geen felgroen of rood: het format blijft rustig en herkenbaar in de merkkleuren.
 - Font Inter: Black voor koppen, ExtraBold voor titels, Medium voor uitleg.
 - Animaties: ease-out 0,35-0,4 s, alleen de stempel heeft een kleine overshoot.
+
+## Header (compact)
+- Wit, 166 px hoog: logo (60 px) met daaronder de vaste vraag. Geen voortgangsbalk, geen label rechtsboven.

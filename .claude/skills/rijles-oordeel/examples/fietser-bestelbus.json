@@ -15,19 +15,23 @@
     "logo": "../../../../content/brand/bvo-logo.png"
   },
   "layout": {
-    "video_y": 240,
+    "video_y": 166,
     "video_h": 1440,
     "card": [
       0,
-      1680,
+      1606,
       1080,
       1920
     ],
-    "card_band": true
+    "card_band": true,
+    "progress": false
   },
   "header": {
-    "right": "Examensituatie #01",
-    "title": "Handelde de leerling goed?"
+    "title": "Handelde de leerling goed?",
+    "logo_h": 60,
+    "logo_y": 18,
+    "title_y": 88,
+    "title_size": 54
   },
   "hook": {
     "end": 2.6,

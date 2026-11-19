@@ -33,7 +33,7 @@ Kopieer `examples/fietser-bestelbus.json` naar `<project>/spec.json` en vul in:
 - `scenes`: 4 tot 6 kaarten. Vast patroon: **Kijk mee → Moment 1 → Moment 2 → Oordeel instructeur (`kind: verdict`) → Jouw oordeel (`kind: poll`)**. `start` = de seconde waarop het moment in beeld begint. Titel max 28 tekens, sub max 45 tekens.
 - `stamp`: tegelijk met de verdict-kaart. Tekst: `GOED GEHANDELD`, `TE SNEL`, `VOORRANG GEMIST`, etc.
 - `poll`: start 6 tot 8 s voor het einde. Altijd twee opties A/B.
-- `header.right`: doorlopende nummering ("Examensituatie #02"). Dat bouwt een serie op.
+- `header`: alleen `title` plus de compacte maten uit het voorbeeld. `header.right` (label rechtsboven) en `layout.progress` (voortgangsbalk) staan bewust uit.
 - `brand`: `primary`, `light` en `logo` van de rijschool (standaard BVO, zie format.md).
 - `layout.card_band: true` (standaard): de scènekaart vult de balk onder de video. Zonder band-modus zweeft de kaart over het beeld (`layout.card` = positie); dan kan `footer` een slogan tonen.
 
