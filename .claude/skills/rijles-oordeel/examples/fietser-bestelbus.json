@@ -1,0 +1,19 @@
+{
+  "source": {"file": "/root/.claude/uploads/873df586-5366-596d-883f-3f3a29a5ec7c/9b4649b0-c036a63c-db96-444e-b430-0b37d8a9917d.mov",
+             "crop": [0, 186, 720, 960]},
+  "duration": 43.0,
+  "brand": {"bg": "#0E141B", "card": "#121B24", "accent": "#C6F432", "muted": "#9AA7B4", "good": "#2BD576", "bad": "#FF5A5F"},
+  "layout": {"video_y": 240, "video_h": 1440, "card": [24, 1222, 1056, 1408]},
+  "header": {"tag": "Rijles", "right": "Examensituatie #01", "title": "Handelde de leerling goed?"},
+  "footer": {"handle": "@jouwrijschool", "line": "Elke dag een echte examensituatie"},
+  "hook": {"end": 2.6, "lines": ["Wachten", "of doorrijden?"], "a": "Wachten", "b": "Doorrijden"},
+  "scenes": [
+    {"start": 0.0,  "label": "Kijk mee",            "title": "Fietser én bestelbus",     "sub": "Let op wat er vóór de lesauto gebeurt."},
+    {"start": 6.0,  "label": "Moment 1 · Fietser",  "title": "De leerling blijft staan", "sub": "De fietser krijgt ruimte om voorbij te gaan."},
+    {"start": 16.0, "label": "Moment 2 · Bestelbus","title": "De leerling wacht opnieuw","sub": "De bestelbus rijdt eerst voorbij."},
+    {"start": 25.0, "label": "Oordeel instructeur", "title": "Wachten was verstandig",   "sub": "Pas doorrijden als er echt ruimte is.", "kind": "verdict"},
+    {"start": 35.5, "label": "Jouw oordeel",        "title": "Wat had jij gedaan?",      "sub": "Reageer met A of B in de comments.", "kind": "poll"}
+  ],
+  "stamp": {"at": 25.0, "end": 29.0, "text": "GOED GEHANDELD"},
+  "poll": {"at": 35.5, "question": "Wat doe jij?", "a": "Wachten", "b": "Doorrijden"}
+}
