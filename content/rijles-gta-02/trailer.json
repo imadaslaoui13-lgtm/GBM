@@ -105,16 +105,16 @@
     "start": 0,
     "end": 3.6,
     "lines": [
-      "POV: zo ziet mijn ochtend eruit",
+      "POV: zo ziet elke ochtend eruit",
       "sinds GTA 6 uit is",
-      "als ik mijn leerling ophaal"
+      "als je je leerling ophaalt"
     ]
   },
   "mission": {
     "start": 3.6,
     "end": 7.6,
     "title": "Leerling ophalen",
-    "goal": "Ik haal mijn leerling op voor de rijles."
+    "goal": "Haal je leerling op voor de rijles."
   },
   "objectives": [
     {
@@ -122,7 +122,7 @@
       "end": 6.0,
       "parts": [
         [
-          "Ik haal mijn ",
+          "Haal je ",
           "w"
         ],
         [
@@ -140,7 +140,7 @@
       "end": 10.2,
       "parts": [
         [
-          "Ik houd afstand in de ",
+          "Hou afstand door de ",
           "w"
         ],
         [
@@ -158,7 +158,7 @@
       "end": 14.6,
       "parts": [
         [
-          "Ik rijd naar het ",
+          "Rijd naar het ",
           "w"
         ],
         [

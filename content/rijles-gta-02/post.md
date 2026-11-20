@@ -1,11 +1,11 @@
 # Missie 2 – Leerling ophalen (trailerstijl)
 
 ## Hook in beeld
-POV: zo ziet mijn ochtend eruit sinds GTA 6 uit is als ik mijn leerling ophaal
+POV: zo ziet elke ochtend eruit sinds GTA 6 uit is als je je leerling ophaalt
 
 ## Caption
-Elke ochtend dezelfde missie 🎮🚗 Regen, spits, rood licht… en ergens wacht mijn leerling.
-Wie haal ik morgen op? Like, reageer en deel!
+Elke ochtend dezelfde missie 🎮🚗 Regen, spits, rood licht… en ergens wacht een leerling.
+Wie halen we morgen op? Like, reageer en deel!
 
 ## Hashtags
 #rijles #rijbewijs #rijschool #pov #gooi #rijinstructeur #bvo

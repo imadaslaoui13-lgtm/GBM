@@ -171,7 +171,7 @@ class Trailer:
         d = ImageDraw.Draw(lay)
         for (bx, sc, lean) in [(0.16, 1.0, 0.10), (0.27, 0.72, -0.06), (0.76, 0.95, -0.12), (0.88, 0.66, 0.08)]:
             x0 = bx * w
-            H_ = h * 0.80 * sc
+            H_ = h * 0.62 * sc
             trunk = []
             for i in range(11):  # licht gebogen stam
                 q = i / 10
@@ -198,55 +198,79 @@ class Trailer:
         return lay
 
     def logo_mark(self):
+        """BVO als game-titellogo: in de letters een zonsondergang met zon, palmen en water."""
         if "mark" in self.cache:
             return self.cache["mark"]
         e = self.s["end"]
-        f = HUD(360)
         txt = e.get("mark", "BVO")
+        f = HUD(360)
         tmp = ImageDraw.Draw(Image.new("L", (1, 1)))
         l, t_, r, b = tmp.textbbox((0, 0), txt, font=f)
-        tw, th = r - l, b - t_
-        W2, H2 = tw + 80, th + 80
-        mask = Image.new("L", (W2, H2), 0)
-        ImageDraw.Draw(mask).text((40 - l, 40 - t_), txt, font=f, fill=255)
-        # verloop blauw -> paars -> roze -> oranje, diagonaal
-        stops = [(70, 120, 255), (140, 60, 245), (255, 62, 165), (255, 160, 70)]
-        grad = Image.new("RGB", (W2, H2))
-        gp = grad.load()
-        for y in range(H2):
-            for x in range(W2):
-                q = max(0.0, min(0.999, (x / W2) * 0.7 + (1 - y / H2) * 0.3))
-                seg = int(q * 3); k = q * 3 - seg
-                gp[x, y] = tuple(int(stops[seg][i] + (stops[seg + 1][i] - stops[seg][i]) * k) for i in range(3))
-        # zachte gloed van de horizon onderin de letters
-        glow = Image.new("L", (W2, H2), 0)
-        ImageDraw.Draw(glow).ellipse((W2 * 0.15, H2 * 0.55, W2 * 0.85, H2 * 1.3), fill=120)
-        grad = Image.composite(Image.new("RGB", (W2, H2), (255, 210, 140)), grad, glow.filter(ImageFilter.GaussianBlur(60)))
-        palms = self._palms(W2, H2 - 40)
-        pal = Image.new("L", (W2, H2), 0)
-        pal.paste(palms.filter(ImageFilter.GaussianBlur(1.6)).point(lambda v: 255 if v > 90 else int(v * 2.8)), (0, 40))
-        grad.paste(Image.new("RGB", (W2, H2), (60, 20, 90)), (0, 0), ImageChops.multiply(pal, mask))
-        out = Image.new("RGBA", (W2, H2), (0, 0, 0, 0))
-        # witte binnenrand + donkere buitenrand
-        edge = mask.filter(ImageFilter.MaxFilter(13))
-        out.paste((15, 8, 35, 255), (0, 0), edge)
-        out.paste((255, 255, 255, 255), (0, 0), mask.filter(ImageFilter.MaxFilter(5)))
-        out.paste(grad, (0, 0), mask)
-        out = out.resize((W2, int(H2 * 1.45)), Image.LANCZOS)  # hogere, smallere letters
-        # woordmerk in wit bovenop, overlapt alleen de bovenrand
-        wm = " ".join(e.get("wordmark", ["verkeersschool"])) if isinstance(e.get("wordmark"), list) else e.get("wordmark", "verkeersschool")
-        wm = wm.replace("verkeers school", "verkeersschool")
-        fw = font("Black", 104)
-        tmpd = ImageDraw.Draw(Image.new("L", (1, 1)))
-        ww = tmpd.textlength(wm, font=fw)
-        top = 120
-        full = Image.new("RGBA", (max(out.width, int(ww) + 60), out.height + top), (0, 0, 0, 0))
-        full.alpha_composite(out, ((full.width - out.width) // 2, top))
+        pad = 50
+        m0 = Image.new("L", (r - l + 2 * pad, b - t_ + 2 * pad), 0)
+        ImageDraw.Draw(m0).text((pad - l, pad - t_), txt, font=f, fill=255)
+        Wm, Hm = m0.width, int(m0.height * 1.5)   # hoge, smalle letters
+        mask = m0.resize((Wm, Hm), Image.LANCZOS)
+        # binnenkant op 3x resolutie tekenen voor gladde randen
+        S = 3
+        art = Image.new("RGB", (Wm * S, Hm * S))
+        ad = ImageDraw.Draw(art)
+        hz = int(Hm * S * 0.70)  # horizon
+        sky = [(60, 70, 230), (150, 50, 220), (255, 60, 150), (255, 140, 70), (255, 200, 110)]
+        for y in range(hz):
+            q = y / hz
+            seg = min(3, int(q * 4)); k = q * 4 - seg
+            ad.line([(0, y), (Wm * S, y)], fill=tuple(int(sky[seg][i] + (sky[seg + 1][i] - sky[seg][i]) * k) for i in range(3)))
+        # zon op de horizon met strepen
+        sr = int(Hm * S * 0.24)
+        scx = int(Wm * S * 0.55)
+        sun = Image.new("L", art.size, 0)
+        sdraw = ImageDraw.Draw(sun)
+        sdraw.ellipse((scx - sr, hz - sr, scx + sr, hz + sr), fill=255)
+        for i, yy in enumerate(range(hz - int(sr * 0.55), hz, int(sr * 0.16))):
+            sdraw.rectangle((0, yy, art.width, yy + 4 * S + i * S), fill=0)
+        art.paste((255, 225, 120), (0, 0), sun)
+        # water onder de horizon met lichtreflecties
+        for y in range(hz, Hm * S):
+            q = (y - hz) / max(1, Hm * S - hz)
+            c = tuple(int(a_ + (b_ - a_) * q) for a_, b_ in zip((120, 40, 150), (40, 15, 80)))
+            ad.line([(0, y), (Wm * S, y)], fill=c)
+        for i in range(9):
+            yy = hz + 10 * S + i * 14 * S
+            wdt = int(sr * (1.4 - i * 0.12))
+            ad.line([(scx - wdt, yy), (scx + wdt, yy)], fill=(255, 170, 120), width=3 * S)
+        # palmen staan op de horizon
+        palms = self._palms(Wm, hz // S).resize((Wm * S, hz), Image.LANCZOS).filter(ImageFilter.GaussianBlur(S * 0.5))
+        pl = Image.new("L", art.size, 0)
+        pl.paste(palms, (0, 0))
+        art.paste((35, 12, 60), (0, 0), pl)
+        art = art.resize((Wm, Hm), Image.LANCZOS)
+        out = Image.new("RGBA", (Wm, Hm + 140), (0, 0, 0, 0))
+        oy = 120
+        big = Image.new("L", out.size, 0)
+        big.paste(mask, (0, oy))
+        glow = Image.new("RGBA", out.size, (255, 60, 170, 0))
+        glow.putalpha(big.filter(ImageFilter.MaxFilter(21)).filter(ImageFilter.GaussianBlur(26)).point(lambda v: int(v * 0.55)))
+        out.alpha_composite(glow)
+        out.paste((14, 6, 32, 255), (0, 0), big.filter(ImageFilter.MaxFilter(15)))
+        out.paste((255, 255, 255, 255), (0, 0), big.filter(ImageFilter.MaxFilter(7)))
+        art_full = Image.new("RGB", out.size)
+        art_full.paste(art, (0, oy))
+        out.paste(art_full, (0, 0), big)
+        # woordmerk bovenop
+        wm = e.get("wordmark", "verkeersschool")
+        wm = "".join(wm) if isinstance(wm, list) else wm
+        fw = font("Black", 100)
+        ww = tmp.textlength(wm, font=fw)
+        full = Image.new("RGBA", (max(out.width, int(ww) + 60), out.height), (0, 0, 0, 0))
+        full.alpha_composite(out, ((full.width - out.width) // 2, 0))
         d = ImageDraw.Draw(full)
-        d.text((full.width / 2, top + 38), wm, font=fw, fill=(255, 255, 255, 255), anchor="mm", stroke_width=10, stroke_fill=(15, 8, 35, 255))
-        out = full
-        self.cache["mark"] = out
-        return out
+        sh = Image.new("RGBA", full.size, (0, 0, 0, 0))
+        ImageDraw.Draw(sh).text((full.width / 2 + 6, oy + 12), wm, font=fw, fill=(0, 0, 0, 160), anchor="mm", stroke_width=11, stroke_fill=(0, 0, 0, 160))
+        full.alpha_composite(sh.filter(ImageFilter.GaussianBlur(8)))
+        d.text((full.width / 2, oy + 4), wm, font=fw, fill=(255, 255, 255, 255), anchor="mm", stroke_width=11, stroke_fill=(14, 6, 32, 255))
+        self.cache["mark"] = full
+        return full
 
     def end(self, im, t):
         e = self.s["end"]
@@ -268,11 +292,11 @@ class Trailer:
         im.alpha_composite(with_alpha(bg, k))
         mk = ease_out(clamp((t - e["at"] - 0.15) / 0.9))
         if mk > 0:
-            self.place(im, self.logo_mark(), self.cx, 640, a=mk, scale=1.06 - 0.06 * mk, maxw=860)
+            self.place(im, self.logo_mark(), W // 2, 720, a=mk, scale=1.06 - 0.06 * mk, maxw=900)
         lay = Image.new("RGBA", (W, H), (0, 0, 0, 0))
         d = ImageDraw.Draw(lay)
-        d.text((self.cx, 930), e.get("line2", "voor 't Gooi en omstreken").upper(), font=font("Bold", 30), fill=(255, 255, 255, 220), anchor="mm")
-        d.text((self.cx, 1030), " ".join(e["sub"].upper()), font=font("ExtraBold", 34), fill=(255, 255, 255, 255), anchor="mm")
+        d.text((W // 2, 1090), e.get("line2", "voor 't Gooi en omstreken").upper(), font=font("Bold", 30), fill=(255, 255, 255, 220), anchor="mm")
+        d.text((W // 2, 1180), " ".join(e["sub"].upper()), font=font("ExtraBold", 34), fill=(255, 255, 255, 255), anchor="mm")
         im.alpha_composite(with_alpha(lay, clamp((t - e["at"] - 0.9) / 0.4)))
         for j, (kind, label) in enumerate(e["items"]):
             kk = ease_out((t - e["at"] - 1.4 - j * 0.15) / 0.4)
@@ -285,10 +309,10 @@ class Trailer:
             bd.ellipse((4, 4, 4 + 2 * R * SS, 4 + 2 * R * SS), outline=(255, 255, 255, 255), width=5 * SS)
             self._icon(bd, kind, bc, bc, R * SS * (0.55 if kind == "like" else 0.6), (255, 255, 255, 255))
             btn = big.resize((big.width // SS, big.height // SS), Image.LANCZOS)
-            cx = self.cx + (j - 1) * 190
-            self.place(im, btn, cx, 1170, a=kk, maxw=2000)
+            cx = W // 2 + (j - 1) * 190
+            self.place(im, btn, cx, 1320, a=kk, maxw=2000)
             lay = Image.new("RGBA", (W, H), (0, 0, 0, 0))
-            ImageDraw.Draw(lay).text((cx, 1250), label.upper(), font=font("Bold", 26), fill=(255, 255, 255, 255), anchor="mm")
+            ImageDraw.Draw(lay).text((cx, 1400), label.upper(), font=font("Bold", 26), fill=(255, 255, 255, 255), anchor="mm")
             im.alpha_composite(with_alpha(lay, kk))
 
     # ---------- missie-UI ----------
@@ -425,7 +449,17 @@ class Trailer:
         bend = math.sin(math.radians(max(-80, min(80, ahead - hdg))))
         route = [(px, py), (px, py - 40), (px + 70 * bend, py - 95), (px + 150 * bend, py - 140), (px + 260 * bend, py - 170)]
         md.line(route, fill=(255, 70, 160, 255), width=9, joint="curve")
-        wx, wy = route[2]
+        # doel ligt buiten beeld: ruit op de rand van de kaart, waar de route het kader verlaat
+        wx, wy = route[-1]
+        for (xa, ya), (xb, yb) in zip(route, route[1:]):
+            if not (16 <= xb <= mw - 16 and 16 <= yb <= mh - 16):
+                for q in [i / 40 for i in range(41)]:
+                    xx, yy = xa + (xb - xa) * q, ya + (yb - ya) * q
+                    if not (16 <= xx <= mw - 16 and 16 <= yy <= mh - 16):
+                        break
+                    wx, wy = xx, yy
+                break
+        wx, wy = max(18, min(mw - 18, wx)), max(18, min(mh - 18, wy))
         md.polygon([(wx, wy - 14), (wx + 12, wy), (wx, wy + 14), (wx - 12, wy)], fill=(255, 62, 165, 255), outline=(255, 255, 255, 255))
         md.polygon([(px, py - 16), (px + 12, py + 12), (px, py + 4), (px - 12, py + 12)], fill=(255, 255, 255, 255), outline=(0, 0, 0, 255))
         mask = Image.new("L", (mw, mh), 0)
