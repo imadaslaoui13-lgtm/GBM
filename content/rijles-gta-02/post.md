@@ -14,3 +14,5 @@ Wie halen we morgen op? Like, reageer en deel!
 - "GTA 6" staat alleen als verwijzing in de hook; geen officieel logo, font of beeldmateriaal gebruikt.
 - Telefoonmoment (bron 2–4 s) is bewust uit de montage gelaten.
 - De minimap draait mee met de echte stuurrichting (gemeten uit het beeld, yaw.json).
+- Missie-opbouw: missiekaart linksboven, doel onderin met roze kernwoord, waypoint op de kaart, 'Missie geslaagd'.
+- Eindkaart: BVO als game-titellogo (verloop blauw-paars-roze-oranje, palmsilhouetten, woordmerk erboven).
