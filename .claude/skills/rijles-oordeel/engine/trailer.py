@@ -61,6 +61,7 @@ class Trailer:
         self.cache = {}
         src = os.path.join(base, spec["source"]["file"])
         self.collage = self._collage(src) if "end" in spec else None
+        self.yaw = self._load_yaw()
 
     # ---------- eindkaart: collage met getekende panelen ----------
     def _collage(self, src):
@@ -81,6 +82,8 @@ class Trailer:
         for i, y in enumerate(range(1480, 1840, 34)):
             sd.rectangle((0, y, W, y + 8 + i * 2), fill=(0, 0, 0, 0))
         bg.alpha_composite(sun)
+        if not e.get("panels"):
+            return bg
         # panelen (posities, kanteling) in een collage
         slots = [(40, 170, 560, 600, -3), (530, 150, 1040, 560, 2.5), (60, 590, 520, 980, 2), (500, 560, 1040, 980, -2.5)]
         crop = self.s["source"]["crop"]
@@ -116,7 +119,9 @@ class Trailer:
 
     # ---------- lagen ----------
     def presents(self, im, t):
-        p = self.s["presents"]
+        p = self.s.get("presents")
+        if not p:
+            return
         k = win(t, 0.15, p["end"] - 0.1, 0.35, 0.3)
         if not k:
             return
@@ -159,49 +164,133 @@ class Trailer:
             if k > 0:
                 im.alpha_composite(Image.new("RGBA", (W, H), (255, 240, 230, int(200 * k))))
 
+    def logo_mark(self):
+        """BVO als game-titellogo: dikke letters met diagonaal zonsondergang-verloop, L-plaatje ervoor."""
+        if "mark" in self.cache:
+            return self.cache["mark"]
+        e = self.s["end"]
+        f = HUD(330)
+        txt = e.get("mark", "BVO")
+        tmp = ImageDraw.Draw(Image.new("L", (1, 1)))
+        l, t_, r, b = tmp.textbbox((0, 0), txt, font=f)
+        tw, th = r - l, b - t_
+        lw = int(th * 0.62)  # L-plaatje
+        W2, H2 = lw + 30 + tw + 40, th + 40
+        mask = Image.new("L", (W2, H2), 0)
+        ImageDraw.Draw(mask).text((lw + 30 - l + 20, 20 - t_), txt, font=f, fill=255)
+        grad = Image.new("RGBA", (W2, H2))
+        gp = grad.load()
+        stops = [(120, 50, 230), (255, 70, 150), (255, 150, 70), (255, 214, 90)]
+        for y in range(H2):
+            for x in range(0, W2, 2):
+                q = max(0.0, min(1.0, (x / W2) * 0.65 + (y / H2) * 0.35))
+                seg = min(2, int(q * 3)); k = q * 3 - seg
+                c = tuple(int(stops[seg][i] + (stops[seg + 1][i] - stops[seg][i]) * k) for i in range(3)) + (255,)
+                gp[x, y] = c
+                if x + 1 < W2:
+                    gp[x + 1, y] = c
+        out = Image.new("RGBA", (W2, H2), (0, 0, 0, 0))
+        sh = Image.new("RGBA", (W2, H2), (0, 0, 0, 0))
+        sh.paste((20, 6, 40, 150), (0, 0), mask)
+        out.alpha_composite(sh.filter(ImageFilter.GaussianBlur(16)), (0, 10))
+        out.paste(grad, (0, 0), mask)
+        d = ImageDraw.Draw(out)
+        y0 = 20 + (th - lw) // 2 + int(th * 0.08)
+        d.rounded_rectangle((20, y0, 20 + lw, y0 + lw), int(lw * 0.14), fill=(255, 255, 255, 255))
+        d.text((20 + lw / 2, y0 + lw / 2), "L", font=HUD(int(lw * 0.72)), fill=self.primary[:3] + (255,), anchor="mm")
+        self.cache["mark"] = out
+        return out
+
     def end(self, im, t):
         e = self.s["end"]
         if t < e["at"] or not self.collage:
             return
         k = ease_out((t - e["at"]) / 0.35)
-        zoom = 1.0 + 0.04 * clamp((t - e["at"]) / 5)  # langzame push-in
+        zoom = 1.0 + 0.03 * clamp((t - e["at"]) / 5)
         col = self.collage.resize((int(W * zoom), int(H * zoom)), Image.BILINEAR)
         col = col.crop(((col.width - W) // 2, (col.height - H) // 2, (col.width - W) // 2 + W, (col.height - H) // 2 + H))
         im.alpha_composite(with_alpha(col, k))
-        tk = ease_back(clamp((t - e["at"] - 0.3) / 0.6))
-        if tk > 0:
-            ttl = self.text_img("end", e["title"], TITLE(130), (255, 255, 255), SUNSET[0], 12)
-            self.place(im, ttl, self.cx, 1075, a=clamp(tk), scale=0.85 + 0.15 * tk, rot=3, maxw=880)
-            sub = self.text_img("endsub", e["sub"], TITLE(46), (255, 255, 255), (255, 255, 255), 7)
-            self.place(im, sub, self.cx, 1175, a=clamp((t - e["at"] - 0.6) / 0.3), rot=3, maxw=820)
-        if self.logo:
-            lk = clamp((t - e["at"] - 0.9) / 0.35)
-            if lk > 0:
-                lw = 400
-                lh = int(self.logo.height * lw / self.logo.width)
-                card = Image.new("RGBA", (lw + 50, lh + 40), (0, 0, 0, 0))
-                ImageDraw.Draw(card).rounded_rectangle((0, 0, card.width - 1, card.height - 1), 24, fill=(255, 255, 255, 255),
-                                                       outline=(20, 8, 40, 255), width=5)
-                card.alpha_composite(self.logo.resize((lw, lh), Image.LANCZOS), (25, 20))
-                self.place(im, card, self.cx, 300, a=lk, rot=-2)
-        # like / reageer / deel, klein onder de titel
+        mk = ease_back(clamp((t - e["at"] - 0.2) / 0.7))
+        if mk > 0:
+            self.place(im, self.logo_mark(), self.cx, 620, a=clamp(mk), scale=0.8 + 0.2 * mk, maxw=860)
+        lay = Image.new("RGBA", (W, H), (0, 0, 0, 0))
+        d = ImageDraw.Draw(lay)
+        d.text((self.cx, 820), " ".join(e.get("line1", "VERKEERSSCHOOL")), font=font("ExtraBold", 44), fill=(255, 255, 255, 255),
+               anchor="mm", stroke_width=3, stroke_fill=(40, 10, 70, 255))
+        d.text((self.cx, 880), e.get("line2", "voor 't Gooi en omstreken"), font=font("SemiBold", 32), fill=(255, 255, 255, 230),
+               anchor="mm", stroke_width=2, stroke_fill=(40, 10, 70, 200))
+        im.alpha_composite(with_alpha(lay, clamp((t - e["at"] - 0.7) / 0.35)))
+        sub = self.text_img("endsub", e["sub"], TITLE(52), (255, 255, 255), SUNSET[0], 7)
+        self.place(im, sub, self.cx, 1010, a=clamp((t - e["at"] - 1.0) / 0.3), rot=2, maxw=820)
         for j, (kind, label) in enumerate(e["items"]):
             kk = ease_back((t - e["at"] - 1.3 - j * 0.18) / 0.45)
             if kk <= 0:
                 continue
-            R, SS = 56, 4
+            R, SS = 60, 4
             big = Image.new("RGBA", (2 * R * SS + 8, 2 * R * SS + 8), (0, 0, 0, 0))
             bd = ImageDraw.Draw(big)
             bc = R * SS + 4
-            bd.ellipse((4, 4, 4 + 2 * R * SS, 4 + 2 * R * SS), fill=(255, 255, 255, 255), outline=(20, 8, 40, 255), width=6 * SS)
+            bd.ellipse((4, 4, 4 + 2 * R * SS, 4 + 2 * R * SS), fill=(255, 255, 255, 255), outline=(40, 10, 70, 255), width=6 * SS)
             self._icon(bd, kind, bc, bc, R * SS * (0.58 if kind == "like" else 0.62), self.primary[:3] + (255,))
             btn = big.resize((big.width // SS, big.height // SS), Image.LANCZOS)
-            cx = self.cx + (j - 1) * 200
-            self.place(im, btn, cx, 1290, a=min(1, kk), scale=max(0.01, kk), maxw=2000)
+            cx = self.cx + (j - 1) * 210
+            self.place(im, btn, cx, 1180, a=min(1, kk), scale=max(0.01, kk), maxw=2000)
             lay = Image.new("RGBA", (W, H), (0, 0, 0, 0))
-            ImageDraw.Draw(lay).text((cx, 1378), label.upper(), font=HUD(28), fill=(255, 255, 255, 255), anchor="mm",
-                                     stroke_width=4, stroke_fill=(20, 8, 40, 255))
+            ImageDraw.Draw(lay).text((cx, 1272), label.upper(), font=HUD(30), fill=(255, 255, 255, 255), anchor="mm",
+                                     stroke_width=4, stroke_fill=(40, 10, 70, 255))
             im.alpha_composite(with_alpha(lay, clamp((t - e["at"] - 1.5 - j * 0.18) / 0.25)))
+
+    # ---------- POV-tekst (native TikTok-tekstblok) ----------
+    def pov(self, im, t):
+        p = self.s.get("pov")
+        if not p:
+            return
+        k = win(t, p.get("start", 0), p["end"], 0.01, 0.3)
+        if not k:
+            return
+        lay = Image.new("RGBA", (W, H), (0, 0, 0, 0))
+        d = ImageDraw.Draw(lay)
+        f = font("ExtraBold", 46)
+        y = VY + 80
+        for l in p["lines"]:
+            tw = d.textlength(l, font=f)
+            d.rounded_rectangle((self.cx - tw / 2 - 24, y - 36, self.cx + tw / 2 + 24, y + 36), 14, fill=(255, 255, 255, 255))
+            d.text((self.cx, y), l, font=f, fill=(10, 10, 10, 255), anchor="mm")
+            y += 78
+        im.alpha_composite(with_alpha(lay, k))
+
+    # ---------- stuurrichting ----------
+    def _load_yaw(self):
+        h = self.s.get("hud", {})
+        if not h.get("yaw"):
+            return None
+        y = json.load(open(os.path.join(self.base, h["yaw"])))
+        import numpy as np
+        hd = np.array(y["heading"], dtype=float)
+        k = np.ones(15) / 15  # extra glad (1,5 s): handbewegingen eruit, bochten blijven
+        pad = np.concatenate([np.full(7, hd[0]), hd, np.full(7, hd[-1])])
+        hd = np.convolve(pad, k, mode="valid")
+        fps = y["fps"]
+        # positie op de kaart: rijden in de kijkrichting
+        pos = [(700.0, 1100.0)]
+        for i in range(1, len(hd)):
+            r = math.radians(hd[i])
+            x, yy = pos[-1]
+            pos.append((x + 14 / fps * math.sin(r), yy - 14 / fps * math.cos(r)))
+        return {"fps": fps, "h": hd, "pos": pos}
+
+    def src_time(self, t):
+        acc = self.s.get("presents", {}).get("end", 0)
+        for a, b in self.s["shots"]:
+            if t < acc + (b - a):
+                return a + max(0.0, t - acc)
+            acc += b - a
+        return self.s["shots"][-1][1]
+
+    def heading(self, ts):
+        y = self.yaw
+        i = max(0, min(len(y["h"]) - 1, int(ts * y["fps"])))
+        return float(y["h"][i]), y["pos"][i]
 
     # ---------- HUD (opbouw: afgeronde minimap linksonder, roze route, afstand) ----------
     def hud(self, im, t):
@@ -215,17 +304,21 @@ class Trailer:
             from gta import GTA
             self._map = GTA._make_map(None)
         x0, y0, mw, mh = 50, 1225, 400, 180
-        prog = (t * 14) % 900
-        cx, cy = 700, 1200 - prog
-        ang = 8 * math.sin(t * 0.3)
-        big = self._map.crop((int(cx - 320), int(cy - 320), int(cx + 320), int(cy + 320))).rotate(ang, resample=Image.BICUBIC)
+        ts = self.src_time(t)
+        if self.yaw:
+            hdg, (cx, cy) = self.heading(ts)
+            ahead, _ = self.heading(ts + 1.5)
+        else:
+            hdg, cx, cy, ahead = 0.0, 700, 1100 - t * 14, 0.0
+        big = self._map.crop((int(cx - 320), int(cy - 320), int(cx + 320), int(cy + 320))).rotate(hdg, resample=Image.BICUBIC)
         c = big.width // 2
         m = big.crop((c - mw // 2, c - mh // 2 - 30, c + mw // 2, c + mh // 2 - 30))
         m = ImageEnhance.Brightness(m).enhance(0.8)
         md = ImageDraw.Draw(m)
-        # roze route vanaf de speler naar boven, met bocht
+        # roze route buigt mee met de bocht die eraan komt
         px, py = mw // 2, mh // 2 + 30
-        route = [(px, py), (px, py - 50), (px + 40 * math.sin(t * 0.5), py - 100), (px + 90, py - 150), (px + 90, -20)]
+        bend = math.sin(math.radians(max(-80, min(80, ahead - hdg))))
+        route = [(px, py), (px, py - 40), (px + 70 * bend, py - 95), (px + 150 * bend, py - 140), (px + 260 * bend, py - 170)]
         md.line(route, fill=(255, 70, 160, 255), width=9, joint="curve")
         md.polygon([(px, py - 16), (px + 12, py + 12), (px, py + 4), (px - 12, py + 12)], fill=(255, 255, 255, 255), outline=(0, 0, 0, 255))
         mask = Image.new("L", (mw, mh), 0)
@@ -234,7 +327,6 @@ class Trailer:
         lay.paste(m, (x0, y0), mask)
         d = ImageDraw.Draw(lay)
         d.rounded_rectangle((x0 - 2, y0 - 2, x0 + mw + 1, y0 + mh + 1), 30, outline=(255, 255, 255, int(150 * a)), width=3)
-        # afstand loopt af naar 0
         k = clamp((t - h["start"]) / (h["end"] - h["start"]))
         dist = h["dist_m"] * (1 - k)
         txt = f"{dist / 1000:.1f} km".replace(".", ",") if dist >= 1000 else f"{int(dist // 10 * 10)} m"
@@ -243,7 +335,6 @@ class Trailer:
         if h.get("target"):
             d.text((x0 + 18, y0 + 20), h["target"].upper(), font=font("Bold", 22), fill=(255, 120, 190, int(255 * a)),
                    stroke_width=3, stroke_fill=(0, 0, 0, int(200 * a)))
-        # sterren rechtsboven, klein en leeg
         for i in range(5):
             sx, sy, r = 1000 - i * 40, VY + 50, 15
             pts = [(sx + (r if q % 2 == 0 else r * 0.45) * math.cos(-math.pi / 2 + q * math.pi / 5),
@@ -258,6 +349,7 @@ class Trailer:
         d.rectangle((0, VY + VH, W, H), fill=(0, 0, 0, 255))
         self.presents(im, t)
         self.hud(im, t)
+        self.pov(im, t)
         self.subtitles(im, t)
         self.cards(im, t)
         self.flashes(im, t)
@@ -268,15 +360,17 @@ class Trailer:
 def base_video(spec, src, out, tmp):
     """Zwart intro + shots (geknipt en gegrade) + zwart voor de eindkaart."""
     c = spec["source"]["crop"]
-    pre, endlen = spec["presents"]["end"], spec["duration"] - spec["end"]["at"]
+    pre, endlen = spec.get("presents", {}).get("end", 0), spec["duration"] - spec["end"]["at"]
     parts, fc = [], []
-    fc.append(f"color=c=black:s={W}x{VH}:r={FPS}:d={pre}[pre]")
+    if pre:
+        fc.append(f"color=c=black:s={W}x{VH}:r={FPS}:d={pre}[pre]")
     for i, (a, b) in enumerate(spec["shots"]):
         fc.append(f"[0:v]trim=start={a}:end={b},setpts=PTS-STARTPTS,fps={FPS},crop={c[2]}:{c[3]}:{c[0]}:{c[1]},"
                   f"scale={W}:{VH}:flags=lanczos,{grade()},format=yuv420p[s{i}]")
         parts.append(f"[s{i}]")
     fc.append(f"color=c=black:s={W}x{VH}:r={FPS}:d={endlen}[post]")
-    fc.append(f"[pre]{''.join(parts)}[post]concat=n={len(parts) + 2}:v=1:a=0,format=yuv420p,"
+    head = "[pre]" if pre else ""
+    fc.append(f"{head}{''.join(parts)}[post]concat=n={len(parts) + 1 + (1 if pre else 0)}:v=1:a=0,format=yuv420p,"
               f"pad={W}:{H}:0:{VY}:black[v]")
     subprocess.run(["ffmpeg", "-v", "error", "-y", "-i", src, "-filter_complex", ";".join(fc), "-map", "[v]",
                     "-t", str(spec["duration"]), "-c:v", "libx264", "-crf", "14", "-preset", "fast", out], check=True)

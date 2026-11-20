@@ -8,17 +8,13 @@
       720
     ]
   },
-  "duration": 21.5,
+  "duration": 19.6,
   "brand": {
     "primary": "#2410C4",
     "light": "#71CEFA",
     "logo": "../brand/bvo-logo.png"
   },
   "safe_cx": 470,
-  "presents": {
-    "end": 1.4,
-    "text": "BVO Verkeersschool presenteert"
-  },
   "shots": [
     [
       0.0,
@@ -51,61 +47,55 @@
   ],
   "subs": [
     {
-      "start": 1.5,
-      "end": 3.3,
+      "start": 6.2,
+      "end": 8.1,
       "text": "Regen. Spits. Rood licht."
     },
     {
-      "start": 3.5,
-      "end": 5.1,
-      "text": "Maar de missie blijft hetzelfde."
-    },
-    {
-      "start": 7.5,
-      "end": 9.5,
+      "start": 8.3,
+      "end": 10.3,
       "text": "Ergens in 't Gooi..."
     },
     {
-      "start": 9.7,
-      "end": 11.7,
+      "start": 10.5,
+      "end": 12.3,
       "text": "...wacht een leerling."
     },
     {
-      "start": 13.9,
-      "end": 16.0,
-      "text": "Ben jij de volgende?"
+      "start": 12.6,
+      "end": 14.6,
+      "text": "Instappen maar."
     }
   ],
   "cards": [
     {
-      "start": 5.3,
-      "end": 7.3,
+      "start": 3.9,
+      "end": 5.9,
       "title": "DE INSTRUCTEUR",
       "sub": "BVO Verkeersschool"
     },
     {
-      "start": 11.9,
-      "end": 13.7,
+      "start": 10.5,
+      "end": 12.3,
       "title": "DE MISSIE",
       "sub": "Leerling ophalen"
     }
   ],
   "flashes": [
-    3.4,
-    7.4,
-    11.8,
-    16.1
+    2.0,
+    3.8,
+    6.0,
+    8.2,
+    10.4,
+    12.4,
+    14.7
   ],
   "end": {
-    "at": 16.1,
-    "title": "JOUW RIJBEWIJS",
-    "sub": "BINNENKORT BIJ BVO",
-    "panel_times": [
-      1.0,
-      5.4,
-      10.0,
-      16.0
-    ],
+    "at": 14.7,
+    "mark": "BVO",
+    "line1": "VERKEERSSCHOOL",
+    "line2": "voor 't Gooi en omstreken",
+    "sub": "JOUW RIJBEWIJS BEGINT HIER",
     "items": [
       [
         "like",
@@ -127,41 +117,46 @@
     "music_gain": 1.0,
     "sfx": [
       {
-        "at": 1.4,
-        "file": "impact-boom",
-        "db": -8
-      },
-      {
-        "at": 3.4,
+        "at": 2.0,
         "file": "zhhh",
         "db": -14
       },
       {
-        "at": 7.4,
+        "at": 6.0,
         "file": "zhhh",
         "db": -14
       },
       {
-        "at": 11.8,
+        "at": 10.4,
         "file": "zhhh",
         "db": -14
       },
       {
-        "at": 13.5,
+        "at": 12.1,
         "file": "riser",
         "db": -9
       },
       {
-        "at": 16.1,
+        "at": 14.7,
         "file": "impact-boom",
         "db": -4
       }
     ]
   },
   "hud": {
-    "start": 1.5,
-    "end": 15.9,
+    "start": 0.3,
+    "end": 14.6,
     "dist_m": 1800,
-    "target": "Leerling"
+    "target": "Leerling",
+    "yaw": "yaw.json"
+  },
+  "pov": {
+    "start": 0,
+    "end": 3.6,
+    "lines": [
+      "POV: zo ziet elke ochtend eruit",
+      "sinds GTA 6 uit is",
+      "als je je leerling ophaalt"
+    ]
   }
 }
