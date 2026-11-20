@@ -1,7 +1,7 @@
 # Missie 2 – Leerling ophalen (trailerstijl)
 
 ## Hook in beeld
-POV: zo ziet elke ochtend eruit sinds GTA 6 uit is als je je leerling ophaalt
+POV: zo ziet elke ochtend eruit sinds GTA 6 uit is
 
 ## Caption
 Elke ochtend dezelfde missie 🎮🚗 Regen, spits, rood licht… en ergens wacht een leerling.
